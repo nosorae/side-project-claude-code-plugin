@@ -39,7 +39,7 @@ side-project-claude-settings/
 |------|------|
 | `ssot` | SSOT 문서 구조, 스킬 파이프라인, 경계 규칙 |
 | `workflow` | 요구사항 구체화, 계획 우선, 단순함, 정밀 변경 등 9개 원칙 |
-| `history` | 유의미한 작업 완료 시 `docs/dialogs/`에 대화 기록 |
+| `history` | 세션 종료 시 `docs/handoff/`에 핸드오프 문서 작성 (Stop hook 강제) |
 | `github-issues` | GitHub Issues 기반 작업 관리 (에픽/하위, 라벨, 템플릿) |
 | `meta` | 규칙 파일 변경 시 사용자 확인 필수 |
 
@@ -53,6 +53,7 @@ side-project-claude-settings/
 | `dev-plan` | PRD + 디자인 → 기술 아키텍처, 데이터 모델, API 설계 |
 | `dev-roadmap` | 개발 계획서 → 마일스톤/에픽 분류, claude-task/human-task 구분 |
 | `create-issues` | 로드맵 → GitHub Issues 자동 생성 (에픽 + 하위 작업) |
+| `resume` | 새 세션에서 프로젝트 상태 파악 + 이어하기 (핸드오프/이슈/SSOT 종합) |
 | `init-project` | 새 프로젝트 부트스트랩 (git, GitHub, 규칙/스킬 복사, 라벨) |
 | `sync` | Git pull + 충돌 해결 + 변경 내역 표시 |
 
@@ -64,7 +65,7 @@ side-project-claude-settings/
 1. 디렉토리 생성 + `git init` + GitHub 레포 생성
 2. 규칙 5개를 `.claude/rules/`에 복사
 3. 스킬 6개를 `.claude/skills/`에 복사
-4. `docs/` 디렉토리 구조 생성 (`dialogs/`, `lessons/`)
+4. `docs/` 디렉토리 구조 생성 (`handoff/`, `lessons/`)
 5. GitHub 라벨 생성 (`epic`, `claude-task`, `human-task`)
 
 ### 방법 2: 수동 복사
