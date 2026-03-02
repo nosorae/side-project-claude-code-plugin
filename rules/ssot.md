@@ -10,7 +10,7 @@
 | 화면별 디자인 HTML | `.claude/skills/prd-to-figma/_temp/screen-*.html` | `/prd-to-figma` 스킬 |
 | 개발 계획서 | `docs/dev-plan.md` | `/dev-plan` 스킬 |
 | 배포 로드맵 | `docs/deploy-roadmap.md` | `/dev-roadmap` 스킬 |
-| 대화 기록 | `docs/dialogs/{제목}-{날짜시간}.md` | 히스토리 기록 프로세스 |
+| 핸드오프 | `docs/handoff/{세션이름}-HANDOFF.md` | 세션 핸드오프 프로세스 |
 | 작업 관리 | GitHub Issues (에픽/하위) | `/create-issues` 스킬 |
 | 교훈 기록 | `docs/lessons/{제목}.md` | 자기개선 루프 |
 
