@@ -14,8 +14,8 @@
 | 화면별 디자인 HTML | `.claude/skills/prd-to-figma/_temp/screen-*.html` | `/prd-to-figma` 스킬 |
 | 개발 계획서 | `docs/dev-plan.md` | 수동 |
 | 배포 로드맵 | `docs/deploy-roadmap.md` | 수동 |
-| 작업 계획 | `tasks/todo.md` | 작업 관리 프로세스 |
-| 교훈 기록 | `tasks/lessons.md` | 자기개선 루프 |
+| 작업 계획 | `docs/todo/{제목}.md` | 작업 관리 프로세스 |
+| 교훈 기록 | `docs/lessons/{제목}.md` | 자기개선 루프 |
 
 ### 스킬 파이프라인
 
