@@ -1,0 +1,9 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "command": "bash hooks/enforce-dialog.sh"
+      }
+    ]
+  }
+}

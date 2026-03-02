@@ -64,6 +64,12 @@ mkdir -p {프로젝트경로}/.claude/skills
 for skill in app-plan figma-design-system prd-to-figma dev-plan dev-roadmap create-issues; do
   cp -r "$SOURCE/skills/$skill" {프로젝트경로}/.claude/skills/
 done
+
+# hooks + settings 복사
+mkdir -p {프로젝트경로}/hooks
+cp "$SOURCE/hooks/"*.sh {프로젝트경로}/hooks/
+chmod +x {프로젝트경로}/hooks/*.sh
+cp "$SOURCE/.claude/settings.json" {프로젝트경로}/.claude/settings.json
 ```
 
 ### Step 4: 프로젝트 구조 생성
@@ -98,7 +104,7 @@ gh label create "human-task" --description "사람이 직접 수행해야 하는
 git add -A
 git commit -m "Init: 프로젝트 초기 설정
 
-- 규칙 5개 + 스킬 6개 복사
+- 규칙 5개 + 스킬 6개 + hooks 복사
 - docs/ 디렉토리 구조 생성
 - GitHub 라벨 생성 (epic, claude-task, human-task)"
 
@@ -120,6 +126,7 @@ GitHub: https://github.com/{사용자}/{프로젝트이름}
 포함된 항목:
 - 규칙 5개 (ssot, workflow, history, github-issues, meta)
 - 스킬 6개 (app-plan, figma-design-system, prd-to-figma, dev-plan, dev-roadmap, create-issues)
+- hooks (enforce-dialog: 대화 기록 강제)
 - docs/ 디렉토리 구조 (dialogs/, lessons/)
 - GitHub 라벨 (epic, claude-task, human-task)
 
@@ -142,6 +149,8 @@ GitHub: https://github.com/{사용자}/{프로젝트이름}
 - [ ] GitHub 레포가 생성/연결되었는가?
 - [ ] 모든 규칙이 `.claude/rules/`에 복사되었는가?
 - [ ] 모든 스킬이 `.claude/skills/`에 복사되었는가?
+- [ ] `hooks/enforce-dialog.sh`가 복사되고 실행 권한이 있는가?
+- [ ] `.claude/settings.json`에 Stop hook이 설정되었는가?
 - [ ] `docs/`, `docs/dialogs/`, `docs/lessons/` 디렉토리가 존재하는가?
 - [ ] GitHub 라벨 3개(epic, claude-task, human-task)가 생성되었는가?
 - [ ] 초기 커밋이 push되었는가?
