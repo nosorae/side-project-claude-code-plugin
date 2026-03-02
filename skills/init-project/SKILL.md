@@ -111,7 +111,117 @@ git commit -m "Init: 프로젝트 초기 설정
 git push -u origin main
 ```
 
-### Step 7: 완료 안내
+### Step 7: 파이프라인 초기 이슈 생성
+
+**Actions:**
+
+프로젝트 파이프라인의 각 단계를 에픽 이슈로 미리 생성한다:
+
+```bash
+# 에픽 이슈 생성 (파이프라인 순서)
+gh issue create --title "[Epic] 기획서(PRD) 작성" \
+  --label "epic,claude-task" \
+  --body "## 목표
+/app-plan 스킬로 앱 기획서를 작성한다.
+
+## 할일
+- [ ] 아이디어 검증 (3인 에이전트 토론)
+- [ ] 핵심 가치 정의
+- [ ] MVP 범위 설정
+- [ ] 유저 플로우 정의
+- [ ] 기획서 저장 (docs/YYYY-MM-DD-{앱이름}-기획서.md)
+
+## 검증 방법
+- [ ] docs/ 에 기획서 파일 존재
+- [ ] MVP 기능, 기술 스택, 유저 플로우가 포함됨"
+
+gh issue create --title "[Epic] 디자인 시스템 생성" \
+  --label "epic,claude-task" \
+  --body "## 목표
+/figma-design-system 스킬로 디자인 토큰과 시스템을 생성한다.
+
+## 전제조건
+- 기획서(PRD) 완료
+
+## 할일
+- [ ] 디자인 토큰 생성 (tokens.css)
+- [ ] 디자인 시스템 HTML 생성
+- [ ] Figma 내보내기
+
+## 검증 방법
+- [ ] .claude/skills/prd-to-figma/tokens.css 존재
+- [ ] 디자인 시스템 HTML 렌더링 정상"
+
+gh issue create --title "[Epic] 화면별 디자인 생성" \
+  --label "epic,claude-task" \
+  --body "## 목표
+/prd-to-figma 스킬로 PRD 화면 정의를 HTML로 변환한다.
+
+## 전제조건
+- 기획서(PRD) 완료
+- tokens.css 존재
+
+## 할일
+- [ ] 화면별 HTML 생성
+- [ ] Figma 페이지 내보내기
+
+## 검증 방법
+- [ ] .claude/skills/prd-to-figma/_temp/screen-*.html 파일 존재"
+
+gh issue create --title "[Epic] 개발 계획서 작성" \
+  --label "epic,claude-task" \
+  --body "## 목표
+/dev-plan 스킬로 기술 아키텍처와 개발 계획을 수립한다.
+
+## 전제조건
+- 기획서(PRD) 완료
+
+## 할일
+- [ ] 기술 아키텍처 설계
+- [ ] 디렉토리 구조 정의
+- [ ] 데이터 모델 설계
+- [ ] API 설계
+- [ ] 핵심 컴포넌트 정의
+
+## 검증 방법
+- [ ] docs/dev-plan.md 존재"
+
+gh issue create --title "[Epic] 배포 로드맵 작성" \
+  --label "epic,claude-task" \
+  --body "## 목표
+/dev-roadmap 스킬로 마일스톤별 배포 로드맵을 생성한다.
+
+## 전제조건
+- docs/dev-plan.md 완료
+
+## 할일
+- [ ] 마일스톤 분류 (M0~M3)
+- [ ] 에픽/하위 작업 정의
+- [ ] claude-task / human-task 분류
+- [ ] 의존성 순서 정의
+
+## 검증 방법
+- [ ] docs/deploy-roadmap.md 존재"
+
+gh issue create --title "[Epic] 개발 이슈 생성" \
+  --label "epic,claude-task" \
+  --body "## 목표
+/create-issues 스킬로 로드맵 기반 GitHub Issues를 생성한다.
+
+## 전제조건
+- docs/deploy-roadmap.md 완료
+
+## 할일
+- [ ] 사용자와 이슈 범위 합의
+- [ ] 에픽 이슈 생성
+- [ ] 하위 작업 이슈 생성 (claude-task / human-task 라벨)
+- [ ] 에픽 이슈에 하위 링크 업데이트
+
+## 검증 방법
+- [ ] 모든 로드맵 작업이 이슈로 생성됨"
+```
+
+### Step 8: 완료 안내
 
 **Actions:**
 
@@ -129,10 +239,10 @@ GitHub: https://github.com/{사용자}/{프로젝트이름}
 - hooks (enforce-dialog: 대화 기록 강제)
 - docs/ 디렉토리 구조 (dialogs/, lessons/)
 - GitHub 라벨 (epic, claude-task, human-task)
+- 파이프라인 초기 이슈 6개 (에픽)
 
 다음 단계:
-1. /app-plan → 기획서 작성
-2. 기술 스택에 맞는 프레임워크 셋업
+GitHub Issues 보드에서 첫 번째 이슈([Epic] 기획서 작성)부터 시작하세요.
 ```
 
 ---
