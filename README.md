@@ -5,7 +5,7 @@
 ## 전체 파이프라인
 
 ```
-app-plan → figma-design-system → prd-to-figma → dev-plan → dev-roadmap → create-issues
+app-plan → design-system-to-figma → prd-to-figma → dev-plan → dev-roadmap → create-issues
 (기획서)    (토큰+디자인시스템)    (화면별 디자인) (개발 계획)  (배포 로드맵)  (이슈 생성)
 ```
 
@@ -23,7 +23,7 @@ side-project-claude-settings/
 │   └── meta.md                # 메타 규칙 (규칙 파일 통제)
 ├── skills/                    # 스킬 (→ .claude/skills/ 에 복사)
 │   ├── app-plan/              # 앱 기획
-│   ├── figma-design-system/   # 디자인 시스템
+│   ├── design-system-to-figma/   # 디자인 시스템
 │   ├── prd-to-figma/          # 화면별 디자인
 │   ├── dev-plan/              # 개발 계획서
 │   ├── dev-roadmap/           # 배포 로드맵
@@ -48,7 +48,7 @@ side-project-claude-settings/
 | 스킬 | 설명 |
 |------|------|
 | `app-plan` | 4단계 앱 기획 (아이디어 검증 → 가치 정의 → MVP → 유저 플로우) |
-| `figma-design-system` | PRD → 디자인 시스템 HTML → Figma 내보내기 |
+| `design-system-to-figma` | PRD → 디자인 시스템 HTML → Figma 내보내기 |
 | `prd-to-figma` | PRD 화면 정의 → 화면별 HTML → Figma 페이지 |
 | `dev-plan` | PRD + 디자인 → 기술 아키텍처, 데이터 모델, API 설계 |
 | `dev-roadmap` | 개발 계획서 → 마일스톤/에픽 분류, claude-task/human-task 구분 |
@@ -65,7 +65,7 @@ side-project-claude-settings/
 1. 디렉토리 생성 + `git init` + GitHub 레포 생성
 2. 규칙 5개를 `.claude/rules/`에 복사
 3. 스킬 6개를 `.claude/skills/`에 복사
-4. `docs/` 디렉토리 구조 생성 (`handoff/`, `lessons/`)
+4. `docs/` 디렉토리 구조 생성 (`ssot/`, `handoff/`, `lessons/`)
 5. GitHub 라벨 생성 (`epic`, `claude-task`, `human-task`)
 
 ### 방법 2: 수동 복사
@@ -110,10 +110,10 @@ claude plugin install --plugin-dir ~/side-project-claude-settings
 ## 스킬 의존성
 
 ```
-app-plan → figma-design-system → prd-to-figma (tokens.css 선행 필요)
+app-plan → design-system-to-figma → prd-to-figma (tokens.css 선행 필요)
 dev-plan → dev-roadmap → create-issues (순차 실행)
 ```
 
-- `figma-design-system`과 `prd-to-figma`는 `frontend-design:frontend-design` 스킬이 있으면 디자인 품질이 향상됩니다.
+- `design-system-to-figma`과 `prd-to-figma`는 `frontend-design:frontend-design` 스킬이 있으면 디자인 품질이 향상됩니다.
 - `dev-plan`은 기획서(PRD)가 필요합니다.
 - `create-issues`는 GitHub 레포 연결이 필요합니다.
