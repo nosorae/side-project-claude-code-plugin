@@ -74,22 +74,22 @@ gh pr list --state open
 
 ```bash
 # 기획서 (PRD)
-ls docs/*기획서*.md 2>/dev/null
+ls docs/ssot/*기획서*.md 2>/dev/null
 
 # 디자인 토큰
-ls .claude/skills/prd-to-figma/tokens.css 2>/dev/null
+ls docs/ssot/tokens.css 2>/dev/null
 
 # 디자인 시스템
-ls .claude/skills/prd-to-figma/_temp/design-system.html 2>/dev/null
+ls docs/ssot/design-system.html 2>/dev/null
 
 # 화면별 디자인
-ls .claude/skills/prd-to-figma/_temp/screen-*.html 2>/dev/null
+ls docs/ssot/screen-*.html 2>/dev/null
 
 # 개발 계획서
-ls docs/dev-plan.md 2>/dev/null
+ls docs/ssot/dev-plan.md 2>/dev/null
 
 # 배포 로드맵
-ls docs/deploy-roadmap.md 2>/dev/null
+ls docs/ssot/deploy-roadmap.md 2>/dev/null
 ```
 
 파이프라인 진행도를 표로 정리:
@@ -97,12 +97,12 @@ ls docs/deploy-roadmap.md 2>/dev/null
 ```markdown
 | 단계 | 산출물 | 상태 |
 |------|--------|------|
-| 기획서 (PRD) | docs/*기획서*.md | ✅/❌ |
-| 디자인 토큰 | tokens.css | ✅/❌ |
-| 디자인 시스템 | design-system.html | ✅/❌ |
-| 화면별 디자인 | screen-*.html | ✅/❌ |
-| 개발 계획서 | docs/dev-plan.md | ✅/❌ |
-| 배포 로드맵 | docs/deploy-roadmap.md | ✅/❌ |
+| 기획서 (PRD) | docs/ssot/*기획서*.md | ✅/❌ |
+| 디자인 토큰 | docs/ssot/tokens.css | ✅/❌ |
+| 디자인 시스템 | docs/ssot/design-system.html | ✅/❌ |
+| 화면별 디자인 | docs/ssot/screen-*.html | ✅/❌ |
+| 개발 계획서 | docs/ssot/dev-plan.md | ✅/❌ |
+| 배포 로드맵 | docs/ssot/deploy-roadmap.md | ✅/❌ |
 ```
 
 ### Step 5: Git 상태 확인

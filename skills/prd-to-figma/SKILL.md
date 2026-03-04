@@ -28,10 +28,10 @@ PRD 마크다운의 화면 정의를 파싱하여, 디자인 토큰(tokens.css) 
 
 ## 전제 조건
 
-- `/figma-design-system`이 먼저 실행되어 `.claude/skills/prd-to-figma/tokens.css`가 존재해야 한다
+- `/design-system-to-figma`이 먼저 실행되어 `docs/ssot/tokens.css`가 존재해야 한다
 - tokens.css가 없으면 즉시 중단하고 아래 메시지를 출력한다:
 
-> tokens.css가 없습니다. `/figma-design-system`을 먼저 실행해주세요.
+> tokens.css가 없습니다. `/design-system-to-figma`을 먼저 실행해주세요.
 
 ---
 
@@ -39,8 +39,8 @@ PRD 마크다운의 화면 정의를 파싱하여, 디자인 토큰(tokens.css) 
 
 ### Step 1: 전제 조건 확인
 
-1. `Read` 도구로 `.claude/skills/prd-to-figma/tokens.css` 존재 확인
-2. 파일이 없으면 즉시 중단, 사용자에게 `/figma-design-system` 선행 실행 안내
+1. `Read` 도구로 `docs/ssot/tokens.css` 존재 확인
+2. 파일이 없으면 즉시 중단, 사용자에게 `/design-system-to-figma` 선행 실행 안내
 3. 파일이 있으면 내용을 읽어 디자인 토큰 값을 파악한다
 
 ### Step 2: PRD 파싱
@@ -74,14 +74,14 @@ Skill("frontend-design:frontend-design")
 - 390x844 모바일 프레임 (iPhone 14 기준)
 
 **HTML 구성 규칙:**
-- tokens.css 전체 내용을 `<style>` 태그로 HTML `<head>`에 주입
+- `docs/ssot/tokens.css` 전체 내용을 `<style>` 태그로 HTML `<head>`에 주입
 - Tailwind CDN (`<script src="https://cdn.tailwindcss.com"></script>`) + CSS 변수 스타일링
 - 모든 텍스트는 실제 한국어 사용 (Lorem ipsum 절대 금지)
 - 배경: `var(--color-bg)` 또는 `#F8F9FA`
 
 **파일 저장:**
 - 화면당 1개 HTML 파일
-- 경로: `.claude/skills/prd-to-figma/_temp/screen-{번호}-{이름}.html`
+- 경로: `docs/ssot/screen-{번호}-{이름}.html`
 - `Write` 도구로 저장
 - 예: `screen-01-로그인.html`, `screen-02-홈.html`, `screen-03-상세.html`
 
@@ -93,7 +93,7 @@ Skill("frontend-design:frontend-design")
 
 ```bash
 # Bash 도구로 백그라운드 실행 (run_in_background: true)
-cd .claude/skills/prd-to-figma/_temp && python3 -m http.server 8765
+cd docs/ssot && python3 -m http.server 8765
 ```
 
 - 서버 URL: `http://localhost:8765/screen-{번호}-{이름}.html`
@@ -173,7 +173,7 @@ lsof -ti:8765 | xargs kill -9 2>/dev/null || true
 
 ```
 MyApp (Figma File)
-├── Design System    ← /figma-design-system이 생성
+├── Design System    ← /design-system-to-figma이 생성
 ├── 로그인            ← 화면별 페이지
 ├── 홈
 ├── 상세
@@ -269,9 +269,9 @@ PRD 텍스트에서 UI 컴포넌트로 변환하는 규칙:
 
 ### tokens.css 없음
 
-- **원인**: `/figma-design-system`이 선행 실행되지 않았다
-- **해결**: `/figma-design-system {PRD경로} {FigmaURL}`을 먼저 실행한다
-- tokens.css가 생성된 후 `/prd-to-figma`를 다시 실행한다
+- **원인**: `/design-system-to-figma`이 선행 실행되지 않았다
+- **해결**: `/design-system-to-figma {PRD경로} {FigmaURL}`을 먼저 실행한다
+- `docs/ssot/tokens.css`가 생성된 후 `/prd-to-figma`를 다시 실행한다
 
 ### 화면 파싱 실패
 
