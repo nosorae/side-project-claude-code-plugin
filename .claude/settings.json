@@ -1,8 +1,23 @@
 {
   "hooks": {
-    "Stop": [
+    "UserPromptSubmit": [
       {
-        "command": "bash hooks/enforce-dialog.sh"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash hooks/log-conversation.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash hooks/log-conversation.sh"
+          }
+        ]
       }
     ]
   }

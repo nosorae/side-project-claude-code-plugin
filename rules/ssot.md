@@ -10,7 +10,8 @@
 | 화면별 디자인 HTML | `docs/ssot/screen-*.html` | `/prd-to-figma` 스킬 |
 | 개발 계획서 | `docs/ssot/dev-plan.md` | `/dev-plan` 스킬 |
 | 배포 로드맵 | `docs/ssot/deploy-roadmap.md` | `/dev-roadmap` 스킬 |
-| 핸드오프 | `docs/handoff/{세션이름}-HANDOFF.md` | 세션 핸드오프 프로세스 |
+| 핸드오프 | `docs/handoff/{세션이름}-HANDOFF.md` | `/handoff` 스킬 |
+| 대화 기록 | `docs/sessions/{YYYY-MM-DD}-{session_id}.md` | 자동 로깅 훅 |
 | 작업 관리 | GitHub Issues (에픽/하위) | `/create-issues` 스킬 |
 | 교훈 기록 | `docs/lessons/{제목}.md` | 자기개선 루프 |
 
