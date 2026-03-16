@@ -80,35 +80,8 @@
 
 ## 설치
 
-### `/init-project` (추천)
-
 ```
 > /init-project
-프로젝트 이름: my-workout-app
-공개 여부: private
-설명: 운동 루틴 관리 앱
 ```
 
-### 수동 복사
-
-```bash
-SOURCE=~/side-project-claude-settings
-TARGET=<프로젝트경로>
-
-mkdir -p "$TARGET/.claude/rules" "$TARGET/.claude/skills"
-cp "$SOURCE/rules/"*.md "$TARGET/.claude/rules/"
-cp -r "$SOURCE/skills/app-plan" "$TARGET/.claude/skills/"
-# ... 필요한 스킬만 선택 복사
-```
-
-### 심링크
-
-```bash
-ln -s ~/side-project-claude-settings/rules <프로젝트>/.claude/rules
-```
-
-### 플러그인
-
-```bash
-claude plugin install --plugin-dir ~/side-project-claude-settings
-```
+프로젝트 이름, 공개 여부, 설명만 입력하면 Git 초기화, GitHub 레포 생성, 규칙/스킬 복사, 라벨 생성까지 자동 완료.
