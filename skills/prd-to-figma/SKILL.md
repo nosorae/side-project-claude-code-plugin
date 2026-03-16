@@ -194,6 +194,10 @@ MyApp (Figma File)
 └── ...
 ```
 
+### Step 4.5: product-blueprint 자동 업데이트
+
+product-blueprint.html의 화면 디자인 탭을 자동 업데이트한다. `/product-blueprint --tab=화면디자인` 실행. 각 화면의 디자인과 PRD 요구사항이 나란히 표시된다.
+
 ### Step 5: 완료 보고
 
 최종 응답에 반드시 포함:
