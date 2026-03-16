@@ -1,34 +1,34 @@
 ---
 name: prd-to-figma
-description: "Use when the user wants to convert PRD screen definitions into Figma designs using a tokens.css-based HTML pipeline. Triggered by requests like 'PRD 화면을 Figma로 만들어줘', 'PRD에서 Figma 화면 생성', '/prd-to-figma'."
+description: "Use when the user wants to convert PRD screen definitions into screen HTML files. HTML 생성이 기본이며, Figma 내보내기는 사용자가 요청한 경우에만 수행. Triggered by requests like 'PRD 화면 만들어줘', 'PRD에서 화면 생성', '/prd-to-figma'."
 ---
 
 # PRD to Figma
 
 ## 목적
 
-PRD 마크다운의 화면 정의를 파싱하여, 디자인 토큰(tokens.css) 기반 HTML을 화면별로 생성하고, Figma MCP `generate_figma_design`으로 Figma 파일에 화면별 페이지로 내보낸다.
+PRD 마크다운의 화면 정의를 파싱하여, 디자인 토큰(tokens.css) 기반 HTML을 화면별로 생성한다. HTML 파일을 로컬 브라우저에서 확인하는 것이 기본 워크플로우이며, Figma 내보내기는 사용자가 명시적으로 요청한 경우에만 수행한다.
 
 ## 사용법
 
 ```bash
-# 기본: PRD 경로 + Figma URL
-/prd-to-figma docs/plans/my-app-spec.md https://www.figma.com/design/ABC123/MyApp
+# 기본: PRD 경로 (HTML 생성만)
+/prd-to-figma docs/plans/my-app-spec.md
 
 # 특정 화면만 필터링
-/prd-to-figma docs/plans/my-app-spec.md https://www.figma.com/design/ABC123/MyApp --screen 로그인,홈
+/prd-to-figma docs/plans/my-app-spec.md --screen 로그인,홈
 
-# Figma URL 없이 (실행 중 질문)
-/prd-to-figma docs/plans/my-app-spec.md
+# Figma export도 함께 수행할 경우: PRD 경로 + Figma URL
+/prd-to-figma docs/plans/my-app-spec.md https://www.figma.com/design/ABC123/MyApp
 ```
 
 - 첫 번째 인자: PRD 파일 경로 (필수)
-- 두 번째 인자: Figma URL (선택, 없으면 실행 중 사용자에게 질문)
+- 두 번째 인자: Figma URL (선택, 있으면 Figma 내보내기도 수행)
 - `--screen`: 특정 화면만 필터링 (선택, 쉼표 구분)
 
 ## 전제 조건
 
-- `/design-system-to-figma`이 먼저 실행되어 `docs/ssot/tokens.css`가 존재해야 한다
+- `/design-system-to-figma`이 먼저 실행되어 `docs/ssot/design/system/tokens.css`가 존재해야 한다
 - tokens.css가 없으면 즉시 중단하고 아래 메시지를 출력한다:
 
 > tokens.css가 없습니다. `/design-system-to-figma`을 먼저 실행해주세요.
@@ -39,7 +39,7 @@ PRD 마크다운의 화면 정의를 파싱하여, 디자인 토큰(tokens.css) 
 
 ### Step 1: 전제 조건 확인
 
-1. `Read` 도구로 `docs/ssot/tokens.css` 존재 확인
+1. `Read` 도구로 `docs/ssot/design/system/tokens.css` 존재 확인
 2. 파일이 없으면 즉시 중단, 사용자에게 `/design-system-to-figma` 선행 실행 안내
 3. 파일이 있으면 내용을 읽어 디자인 토큰 값을 파악한다
 
@@ -74,31 +74,45 @@ Skill("frontend-design:frontend-design")
 - 390x844 모바일 프레임 (iPhone 14 기준)
 
 **HTML 구성 규칙:**
-- `docs/ssot/tokens.css` 전체 내용을 `<style>` 태그로 HTML `<head>`에 주입
+- `docs/ssot/design/system/tokens.css` 전체 내용을 `<style>` 태그로 HTML `<head>`에 주입
 - Tailwind CDN (`<script src="https://cdn.tailwindcss.com"></script>`) + CSS 변수 스타일링
 - 모든 텍스트는 실제 한국어 사용 (Lorem ipsum 절대 금지)
 - 배경: `var(--color-bg)` 또는 `#F8F9FA`
 
 **파일 저장:**
 - 화면당 1개 HTML 파일
-- 경로: `docs/ssot/screen-{번호}-{이름}.html`
+- 경로: `docs/ssot/design/screens/screen-{번호}-{이름}.html`
 - `Write` 도구로 저장
 - 예: `screen-01-로그인.html`, `screen-02-홈.html`, `screen-03-상세.html`
 
-### Step 4: 순차 캡처 → Figma
+### Step 4: 로컬 브라우저 확인 (기본)
 
-화면마다 아래 과정을 반복한다:
-
-#### 4-1. 로컬 서버 시작
+HTML 파일을 로컬 서버로 띄워 브라우저에서 바로 확인한다.
 
 ```bash
 # Bash 도구로 백그라운드 실행 (run_in_background: true)
-cd docs/ssot && python3 -m http.server 8765
+cd docs/ssot/design/screens && python3 -m http.server 8765
 ```
 
-- 서버 URL: `http://localhost:8765/screen-{번호}-{이름}.html`
+사용자에게 안내:
+```
+화면별 HTML이 생성되었습니다.
+브라우저에서 확인하세요:
+- http://localhost:8765/screen-01-로그인.html
+- http://localhost:8765/screen-02-홈.html
+- ...
 
-#### 4-2. Figma URL에서 fileKey 추출
+HTML 파일을 직접 수정하고 브라우저를 새로고침하면 바로 반영됩니다.
+수정이 필요하면 말씀해주세요.
+```
+
+### Step 4-F: 순차 캡처 → Figma (선택 - 사용자가 요청한 경우에만)
+
+> **이 단계는 사용자가 Figma export를 명시적으로 요청한 경우에만 실행한다.** 기본 워크플로우는 Step 4에서 종료된다.
+
+화면마다 아래 과정을 반복한다:
+
+#### 4-F-1. Figma URL에서 fileKey 추출
 
 **URL 파싱 규칙:**
 
@@ -120,7 +134,7 @@ cd docs/ssot && python3 -m http.server 8765
 (예: https://www.figma.com/design/ABC123/MyApp)
 ```
 
-#### 4-3. Figma MCP로 내보내기
+#### 4-F-2. Figma MCP로 내보내기
 
 **Phase A: 캡처 시작**
 
@@ -159,15 +173,15 @@ mcp__figma__generate_figma_design(
 )
 ```
 
-#### 4-4. 로컬 서버 종료
+#### 4-F-3. 로컬 서버 종료
 
 ```bash
 lsof -ti:8765 | xargs kill -9 2>/dev/null || true
 ```
 
-#### 4-5. 다음 화면으로 반복
+#### 4-F-4. 다음 화면으로 반복
 
-모든 화면에 대해 4-1 ~ 4-4를 순차적으로 반복한다.
+모든 화면에 대해 4-F-1 ~ 4-F-3를 순차적으로 반복한다.
 
 **Figma 파일 내 최종 구조:**
 
@@ -184,10 +198,10 @@ MyApp (Figma File)
 
 최종 응답에 반드시 포함:
 
-1. **생성된 화면 목록**: 성공/실패 상태 구분
-2. **Figma 파일 링크**: `https://www.figma.com/design/{fileKey}`
-3. **실패 화면의 에러 사유** (있을 경우)
-4. **생성된 HTML 파일 경로 목록**
+1. **생성된 화면 목록**: HTML 파일 경로
+2. **로컬 확인 URL**: `http://localhost:8765/` 아래 각 화면 경로
+3. **Figma 내보내기 안내**: "Figma로 내보내려면 '/prd-to-figma' 실행 시 Figma URL을 함께 전달하거나, 'Figma로 내보내줘'라고 요청하세요."
+4. **(Figma export 수행한 경우)** Figma 파일 링크 + 성공/실패 상태 구분 + 실패 화면의 에러 사유
 
 ---
 
@@ -271,7 +285,7 @@ PRD 텍스트에서 UI 컴포넌트로 변환하는 규칙:
 
 - **원인**: `/design-system-to-figma`이 선행 실행되지 않았다
 - **해결**: `/design-system-to-figma {PRD경로} {FigmaURL}`을 먼저 실행한다
-- `docs/ssot/tokens.css`가 생성된 후 `/prd-to-figma`를 다시 실행한다
+- `docs/ssot/design/system/tokens.css`가 생성된 후 `/prd-to-figma`를 다시 실행한다
 
 ### 화면 파싱 실패
 

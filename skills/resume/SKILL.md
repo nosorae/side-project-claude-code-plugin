@@ -74,22 +74,22 @@ gh pr list --state open
 
 ```bash
 # 기획서 (PRD)
-ls docs/ssot/*기획서*.md 2>/dev/null
+ls docs/ssot/prd/*기획서*.md 2>/dev/null
 
 # 디자인 토큰
-ls docs/ssot/tokens.css 2>/dev/null
+ls docs/ssot/design/system/tokens.css 2>/dev/null
 
 # 디자인 시스템
-ls docs/ssot/design-system.html 2>/dev/null
+ls docs/ssot/design/system/design-system.html 2>/dev/null
 
 # 화면별 디자인
-ls docs/ssot/screen-*.html 2>/dev/null
+ls docs/ssot/design/screens/screen-*.html 2>/dev/null
 
 # 개발 계획서
-ls docs/ssot/dev-plan.md 2>/dev/null
+ls docs/ssot/dev/dev-plan.md 2>/dev/null
 
 # 배포 로드맵
-ls docs/ssot/deploy-roadmap.md 2>/dev/null
+ls docs/ssot/dev/deploy-roadmap.md 2>/dev/null
 ```
 
 파이프라인 진행도를 표로 정리:
@@ -97,12 +97,12 @@ ls docs/ssot/deploy-roadmap.md 2>/dev/null
 ```markdown
 | 단계 | 산출물 | 상태 |
 |------|--------|------|
-| 기획서 (PRD) | docs/ssot/*기획서*.md | ✅/❌ |
-| 디자인 토큰 | docs/ssot/tokens.css | ✅/❌ |
-| 디자인 시스템 | docs/ssot/design-system.html | ✅/❌ |
-| 화면별 디자인 | docs/ssot/screen-*.html | ✅/❌ |
-| 개발 계획서 | docs/ssot/dev-plan.md | ✅/❌ |
-| 배포 로드맵 | docs/ssot/deploy-roadmap.md | ✅/❌ |
+| 기획서 (PRD) | docs/ssot/prd/*기획서*.md | ✅/❌ |
+| 디자인 토큰 | docs/ssot/design/system/tokens.css | ✅/❌ |
+| 디자인 시스템 | docs/ssot/design/system/design-system.html | ✅/❌ |
+| 화면별 디자인 | docs/ssot/design/screens/screen-*.html | ✅/❌ |
+| 개발 계획서 | docs/ssot/dev/dev-plan.md | ✅/❌ |
+| 배포 로드맵 | docs/ssot/dev/deploy-roadmap.md | ✅/❌ |
 ```
 
 ### Step 5: Git 상태 확인
@@ -147,7 +147,8 @@ git log --oneline -5
 {핸드오프 문서의 Notes for Next Session}
 ```
 
-사용자 확인: "이 상태에서 어떤 작업을 이어할까요?"
+가장 우선순위가 높은 작업을 자동으로 선택하고 즉시 시작을 제안한다:
+"**추천 다음 작업**: {가장 우선순위 높은 작업}. 바로 시작할까요? (다른 작업을 원하시면 말씀해주세요)"
 
 ---
 

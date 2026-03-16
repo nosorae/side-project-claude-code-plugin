@@ -1,72 +1,189 @@
 # Side Project Claude Settings
 
-사이드 프로젝트에서 재사용하는 Claude Code 규칙 + 스킬 모음.
+사이드 프로젝트를 **아이디어 → 기획 → 디자인 → 개발 계획 → 이슈 관리 → 구현**까지 Claude Code와 함께 진행하기 위한 규칙 + 스킬 모음.
 
-## 전체 파이프라인
+---
+
+## 어떻게 동작하나?
+
+### 핵심 개념
+
+이 레포는 **사이드 프로젝트 전용 워크플로우 템플릿**입니다. `/init-project`로 새 프로젝트를 만들면, 규칙과 스킬이 자동으로 복사되어 Claude Code가 아래 파이프라인을 따라 프로젝트를 진행합니다.
+
+### 전체 파이프라인
 
 ```
-app-plan → design-system-to-figma → prd-to-figma → dev-plan → dev-roadmap → create-issues
-(기획서)    (토큰+디자인시스템)    (화면별 디자인) (개발 계획)  (배포 로드맵)  (이슈 생성)
+  /interview (선택)    /app-plan          /design-system-to-figma     /prd-to-figma
+  ┌──────────┐       ┌─────────┐        ┌─────────────────┐        ┌──────────────┐
+  │ 요구사항  │─────▶│ 기획서   │──────▶│ 디자인 토큰      │──────▶│ 화면별 디자인  │
+  │ 인터뷰   │       │ (PRD)   │        │ + 디자인 시스템   │        │ (HTML)       │
+  └──────────┘       └─────────┘        └─────────────────┘        └──────────────┘
+                          │                                              │
+                          ▼                                              │
+                     /dev-plan                                           │
+                     ┌──────────────┐                                    │
+                     │ 개발 계획서   │◀──────────────────────────────────┘
+                     │ + 플랫폼 스킬 │
+                     └──────────────┘
+                          │
+                          ▼
+                     /dev-roadmap
+                     ┌──────────────┐
+                     │ 배포 로드맵   │
+                     │ (마일스톤)    │
+                     └──────────────┘
+                          │
+                          ▼
+                     /create-issues
+                     ┌──────────────┐
+                     │ GitHub Issues │
+                     │ 자동 생성     │
+                     └──────────────┘
+                          │
+                          ▼
+                       구현 시작!
+                          │
+                     /sync-roadmap (수시 실행)
+                     /product-blueprint (언제든 실행)
 ```
 
-## 구조
+### 사람과 AI의 역할 분담
+
+| 단계 | 사람이 하는 일 | Claude Code가 하는 일 |
+|------|---------------|---------------------|
+| **프로젝트 시작** | `/init-project` 실행, 프로젝트 이름/설명 입력 | Git 초기화, GitHub 레포 생성, 규칙/스킬 복사, 라벨 생성 |
+| **기획** | 앱 아이디어 설명, 에이전트 토론 결과 검토/판단 | 3인 에이전트 토론(시장성/경쟁/리스크), MVP 범위 설정, PRD 작성 |
+| **디자인** | 디자인 결과물 리뷰, 수정 요청 | 디자인 토큰 생성, 컴포넌트 라이브러리 HTML, 화면별 디자인 HTML |
+| **개발 계획** | 기술 스택 확인, 아키텍처 리뷰 | 디렉토리 구조, 데이터 모델, API 설계, 컴포넌트 정의 |
+| **로드맵** | 마일스톤 순서/범위 확인 | 에픽 분류, claude-task/human-task 구분, 의존성 정의 |
+| **이슈 생성** | 이슈 범위/분류 최종 확인 | GitHub Issues 자동 생성 (에픽 + 하위 작업) |
+| **구현** | human-task 수행 (외부 서비스 설정 등), 코드 리뷰 | claude-task 이슈 독립 수행, 테스트 작성, 버그 수정 |
+| **세션 관리** | 세션 종료 시 `/handoff` 요청 | 핸드오프 문서 작성, 다음 세션 `/resume`으로 상태 복구 |
+
+### 작업 흐름 예시
 
 ```
-side-project-claude-settings/
-├── .claude-plugin/
-│   └── plugin.json           # 플러그인 매니페스트
-├── rules/                    # 규칙 (→ .claude/rules/ 에 복사)
-│   ├── ssot.md               # SSOT 문서 구조 + 파이프라인
-│   ├── workflow.md            # 워크플로우 원칙 (0~8)
-│   ├── history.md             # 히스토리 기록
-│   ├── github-issues.md       # GitHub Issues 작업 관리
-│   └── meta.md                # 메타 규칙 (규칙 파일 통제)
-├── skills/                    # 스킬 (→ .claude/skills/ 에 복사)
-│   ├── app-plan/              # 앱 기획
-│   ├── design-system-to-figma/   # 디자인 시스템
-│   ├── prd-to-figma/          # 화면별 디자인
-│   ├── dev-plan/              # 개발 계획서
-│   ├── dev-roadmap/           # 배포 로드맵
-│   ├── create-issues/         # GitHub Issues 생성
-│   ├── init-project/          # 프로젝트 부트스트랩
-│   └── sync/                  # Git 동기화
-└── README.md
+[세션 1] 아이디어가 있는 사람
+├── 사람: "커플 메시지 앱 만들고 싶어"
+├── AI: /app-plan 실행 → 에이전트 3명이 시장성/경쟁/리스크 토론
+├── 사람: 토론 결과 보고 "진행하자" 판단
+├── AI: MVP 범위 설정, 유저 플로우 정의, PRD 작성
+├── AI: /design-system-to-figma → 디자인 토큰 + 컴포넌트 생성
+├── AI: /prd-to-figma → 화면별 디자인 HTML 생성
+├── 사람: 디자인 리뷰 후 수정 요청
+├── AI: /handoff → 세션 정리
+│
+[세션 2] 개발 준비
+├── AI: /resume → 이전 세션 상태 파악
+├── AI: /dev-plan → 기술 아키텍처 설계
+├── 사람: 아키텍처 리뷰, 기술 스택 확인
+├── AI: /dev-roadmap → 마일스톤별 로드맵 생성
+├── 사람: 로드맵 확인
+├── AI: /create-issues → GitHub Issues 자동 생성
+│
+[세션 3~N] 구현
+├── AI: /resume → 상태 파악
+├── 사람: "이슈 #15 해줘" (claude-task)
+├── AI: 이슈 본문 읽고 독립적으로 구현 + 테스트
+├── 사람: human-task 이슈 직접 수행 (Supabase 설정, Apple 인증서 등)
+├── AI: /handoff → 세션 정리
 ```
 
-## 포함된 규칙
+---
 
-| 규칙 | 설명 |
-|------|------|
-| `ssot` | SSOT 문서 구조, 스킬 파이프라인, 경계 규칙 |
-| `workflow` | 요구사항 구체화, 계획 우선, 단순함, 정밀 변경 등 9개 원칙 |
-| `history` | 세션 종료 시 `docs/handoff/`에 핸드오프 문서 작성 (Stop hook 강제) |
-| `github-issues` | GitHub Issues 기반 작업 관리 (에픽/하위, 라벨, 템플릿) |
-| `meta` | 규칙 파일 변경 시 사용자 확인 필수 |
+## 생성되는 프로젝트 구조
 
-## 포함된 스킬
+`/init-project` 실행 후 새 프로젝트에 생성되는 구조:
+
+```
+my-project/
+├── .claude/
+│   ├── settings.json          # 대화 로깅 훅 설정
+│   ├── rules/                 # 워크플로우 규칙 5개
+│   │   ├── workflow.md        # 9개 작업 원칙 (요구사항 구체화, 계획 우선 등)
+│   │   ├── ssot.md            # 문서 구조 + 스킬 파이프라인 정의
+│   │   ├── github-issues.md   # 이슈 관리 (에픽/하위, claude-task/human-task)
+│   │   ├── history.md         # 세션 핸드오프 정책
+│   │   └── meta.md            # 규칙 파일 변경 시 사용자 확인 필수
+│   └── skills/                # 스킬 7개
+│       ├── app-plan/          # 4단계 앱 기획
+│       ├── design-system-to-figma/  # 디자인 시스템 생성
+│       ├── prd-to-figma/      # 화면별 디자인 생성
+│       ├── dev-plan/          # 개발 계획서 작성
+│       ├── dev-roadmap/       # 배포 로드맵 생성
+│       ├── create-issues/     # GitHub Issues 자동 생성
+│       └── handoff/           # 세션 핸드오프 문서 생성
+├── hooks/
+│   └── log-conversation.sh    # 대화 자동 로깅
+├── docs/
+│   ├── ssot/                  # 핵심 문서 (기획서, 디자인, 개발 계획 등)
+│   ├── handoff/               # 세션 핸드오프 문서
+│   ├── lessons/               # 교훈 기록 (자기개선 루프)
+│   └── sessions/              # 대화 로그 (자동 생성)
+└── (프로젝트 소스 코드)
+```
+
+### GitHub에 자동 생성되는 것들
+
+- **라벨 3개**: `epic` (보라), `claude-task` (파랑), `human-task` (노랑)
+- **에픽 이슈 6개**: 파이프라인 각 단계별 (기획서 → 디자인 시스템 → 화면 디자인 → 개발 계획 → 로드맵 → 이슈 생성)
+
+---
+
+## 규칙 5개
+
+| 규칙 | 핵심 내용 |
+|------|----------|
+| **workflow** | 모호하면 물어보기, 계획 후 실행, 검증될 때까지 완료 아님, 최소한의 코드, 서브에이전트 활용 |
+| **ssot** | 프로젝트 문서는 정해진 경로에만 저장, 스킬 간 의존성 명시, 문서 간 불일치 발견 시 알림 |
+| **github-issues** | 에픽/하위 구조, claude-task는 이슈만 읽고 수행 가능하게, human-task는 초보도 따라할 수 있게 |
+| **history** | 유의미한 작업 후 `/handoff`로 세션 정리, 10개 필수 섹션, 커밋+푸시 |
+| **meta** | AI가 규칙 파일을 수정하려면 반드시 사용자 확인 후 |
+
+---
+
+## 스킬 목록
+
+### 파이프라인 스킬 (순서대로 실행)
+
+| 스킬 | 입력 | 출력 | 설명 |
+|------|------|------|------|
+| `/interview` | 앱 아이디어 (대략적) | `interview-notes.md` | 점진적 질문으로 요구사항 구체화 (선택, 생략 가능) |
+| `/app-plan` | 앱 아이디어 | PRD + 유저플로우 HTML | 에이전트 토론으로 아이디어 검증 → MVP 범위 → 유저 플로우 |
+| `/design-system-to-figma` | 기획서 | `tokens.css`, `design-system.html` | 디자인 토큰 + 컴포넌트 (HTML 기본, Figma 선택) |
+| `/prd-to-figma` | 기획서 + tokens.css | `screen-*.html` | 화면별 디자인 HTML (HTML 기본, Figma 선택) |
+| `/dev-plan` | 기획서 | `dev-plan.md` + 아키텍처 HTML | 기술 아키텍처 + 플랫폼 스킬 자동 설치 |
+| `/dev-roadmap` | dev-plan.md | `deploy-roadmap.md` + 타임라인 HTML | M0~M3 마일스톤, claude-task/human-task 분류 |
+| `/create-issues` | deploy-roadmap.md | GitHub Issues | 에픽 + 하위 작업 이슈 자동 생성 |
+
+### 유틸리티 스킬
 
 | 스킬 | 설명 |
 |------|------|
-| `app-plan` | 4단계 앱 기획 (아이디어 검증 → 가치 정의 → MVP → 유저 플로우) |
-| `design-system-to-figma` | PRD → 디자인 시스템 HTML → Figma 내보내기 |
-| `prd-to-figma` | PRD 화면 정의 → 화면별 HTML → Figma 페이지 |
-| `dev-plan` | PRD + 디자인 → 기술 아키텍처, 데이터 모델, API 설계 |
-| `dev-roadmap` | 개발 계획서 → 마일스톤/에픽 분류, claude-task/human-task 구분 |
-| `create-issues` | 로드맵 → GitHub Issues 자동 생성 (에픽 + 하위 작업) |
-| `resume` | 새 세션에서 프로젝트 상태 파악 + 이어하기 (핸드오프/이슈/SSOT 종합) |
-| `init-project` | 새 프로젝트 부트스트랩 (git, GitHub, 규칙/스킬 복사, 라벨) |
-| `sync` | Git pull + 충돌 해결 + 변경 내역 표시 |
+| `/init-project` | 새 프로젝트 부트스트랩 (이 레포의 규칙/스킬을 새 프로젝트에 복사) |
+| `/product-blueprint` | SSOT 문서 통합 마스터 HTML 생성 (파이프라인 언제든 실행 가능) |
+| `/sync-roadmap` | GitHub Issues/PR 상태 기반 로드맵 문서 자동 최신화 |
+| `/handoff` | 세션 종료 시 핸드오프 문서 생성 (10개 필수 섹션 + 커밋) |
+| `/resume` | 새 세션에서 프로젝트 상태 파악 + 이어하기 |
+| `/sync` | Git pull + 충돌 해결 + 최근 변경 내역 표시 |
+| `/ideation` | 8개 에이전트로 수익성 있는 앱 아이디어 발굴 |
+
+---
 
 ## 설치
 
 ### 방법 1: `/init-project` 스킬 (추천)
 
-새 프로젝트에서 `/init-project`를 실행하면 자동으로:
-1. 디렉토리 생성 + `git init` + GitHub 레포 생성
-2. 규칙 5개를 `.claude/rules/`에 복사
-3. 스킬 6개를 `.claude/skills/`에 복사
-4. `docs/` 디렉토리 구조 생성 (`ssot/`, `handoff/`, `lessons/`)
-5. GitHub 라벨 생성 (`epic`, `claude-task`, `human-task`)
+이 레포를 클론한 상태에서 Claude Code에 `/init-project` 실행:
+
+```
+> /init-project
+프로젝트 이름: my-workout-app
+공개 여부: private
+설명: 운동 루틴 관리 앱
+```
+
+자동으로 디렉토리 생성, git init, GitHub 레포, 규칙/스킬 복사, 라벨 생성까지 완료.
 
 ### 방법 2: 수동 복사
 
@@ -74,46 +191,40 @@ side-project-claude-settings/
 SOURCE=~/side-project-claude-settings
 TARGET=<프로젝트경로>
 
-# 규칙 복사
-mkdir -p "$TARGET/.claude/rules"
+mkdir -p "$TARGET/.claude/rules" "$TARGET/.claude/skills"
 cp "$SOURCE/rules/"*.md "$TARGET/.claude/rules/"
-
-# 스킬 복사
-mkdir -p "$TARGET/.claude/skills"
 cp -r "$SOURCE/skills/app-plan" "$TARGET/.claude/skills/"
-cp -r "$SOURCE/skills/dev-plan" "$TARGET/.claude/skills/"
 # ... 필요한 스킬만 선택 복사
 ```
 
 ### 방법 3: 심링크 (규칙 공유)
 
-여러 프로젝트에서 동일한 규칙을 공유하려면:
-
 ```bash
-# 규칙 디렉토리 심링크
 ln -s ~/side-project-claude-settings/rules <프로젝트>/.claude/rules
-
-# 또는 개별 규칙만
-ln -s ~/side-project-claude-settings/rules/workflow.md <프로젝트>/.claude/rules/workflow.md
 ```
 
 ### 방법 4: 플러그인 설치 (스킬만)
-
-`.claude-plugin/plugin.json`이 포함되어 있어 플러그인으로 설치 가능:
 
 ```bash
 claude plugin install --plugin-dir ~/side-project-claude-settings
 ```
 
-> **참고**: 플러그인으로는 스킬만 설치됩니다. 규칙은 별도로 복사하거나 심링크해야 합니다.
+---
 
 ## 스킬 의존성
 
 ```
-app-plan → design-system-to-figma → prd-to-figma (tokens.css 선행 필요)
-dev-plan → dev-roadmap → create-issues (순차 실행)
+[interview] ──▶ app-plan ─────┬──▶ design-system-to-figma ──▶ prd-to-figma
+ (선택)                       │        (tokens.css 필요)
+                              │
+                              └──▶ dev-plan ──▶ dev-roadmap ──▶ create-issues
+                                  (PRD 필요)    (dev-plan 필요) (roadmap + GitHub 필요)
+
+product-blueprint ← 파이프라인 어느 시점에서든 실행 가능 (SSOT 통합 마스터)
+sync-roadmap ← 구현 단계에서 수시 실행 (이슈 상태 → 로드맵 동기화)
 ```
 
-- `design-system-to-figma`과 `prd-to-figma`는 `frontend-design:frontend-design` 스킬이 있으면 디자인 품질이 향상됩니다.
-- `dev-plan`은 기획서(PRD)가 필요합니다.
-- `create-issues`는 GitHub 레포 연결이 필요합니다.
+- `/interview`는 선택사항 — 아이디어가 구체적이면 바로 `/app-plan` 시작
+- `design-system-to-figma`과 `prd-to-figma`는 HTML 생성이 기본, Figma 내보내기는 선택
+- `dev-plan` 실행 시 tech stack에 맞는 플랫폼 스킬 자동 검색/설치
+- `create-issues`는 GitHub 레포 연결 필수

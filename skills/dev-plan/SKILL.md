@@ -4,7 +4,9 @@ description: PRD(기획서)와 디자인 결과물을 기반으로 개발 계획
 
 # Dev Plan (개발 계획서 생성)
 
-기획서(PRD)와 디자인 결과물을 분석하여 `docs/ssot/dev-plan.md`를 생성하는 스킬입니다.
+기획서(PRD)와 디자인 결과물을 분석하여 `docs/ssot/dev/dev-plan.md`를 생성하는 스킬입니다.
+
+> **도식화는 반드시 HTML/CSS로 생성한다. 아스키아트, 머메이드 금지.**
 
 ## 트리거 조건
 
@@ -15,7 +17,7 @@ description: PRD(기획서)와 디자인 결과물을 기반으로 개발 계획
 
 ## 전제조건
 
-- `docs/ssot/` 디렉토리에 기획서(PRD) 파일이 존재해야 한다 (`docs/ssot/YYYY-MM-DD-*-기획서.md`)
+- `docs/ssot/prd/` 디렉토리에 기획서(PRD) 파일이 존재해야 한다 (`docs/ssot/prd/YYYY-MM-DD-*-기획서.md`)
 - 기획서가 없으면 실행을 거부하고, `/app-plan` 스킬을 먼저 실행하도록 안내한다
 
 ## 실행 단계
@@ -24,17 +26,17 @@ description: PRD(기획서)와 디자인 결과물을 기반으로 개발 계획
 
 **Actions:**
 
-1. `docs/ssot/` 디렉토리에서 가장 최근 기획서 파일을 찾는다
+1. `docs/ssot/prd/` 디렉토리에서 가장 최근 기획서 파일을 찾는다
 2. 기획서에서 다음 정보를 추출한다:
    - 핵심 가치 제안
    - MVP 기능 목록
    - 기술 스택 (기획서에 명시된 경우)
    - 화면 목록 및 유저 플로우
 3. 디자인 결과물이 있으면 함께 분석한다:
-   - `docs/ssot/tokens.css` (디자인 토큰)
-   - `docs/ssot/` (디자인 HTML)
+   - `docs/ssot/design/system/tokens.css` (디자인 토큰)
+   - `docs/ssot/design/` (디자인 HTML)
 
-4. **사용자 확인**: "기획서를 분석했습니다. 추가로 고려할 기술적 요구사항이 있나요?"
+4. 사용자에게 추가 기술적 요구사항이 있는지 묻고, 응답을 반영하여 다음 단계로 진행한다
 
 ### Step 2: 기술 아키텍처 설계
 
@@ -60,13 +62,34 @@ description: PRD(기획서)와 디자인 결과물을 기반으로 개발 계획
    - 상태 관리 전략
    - 외부 라이브러리/서비스 의존성
 
-5. **사용자 확인**: "기술 아키텍처 초안입니다. 수정할 부분이 있나요?"
+### Step 3: 플랫폼 스킬 설치
 
-### Step 3: 문서 생성 및 저장
+tech stack이 결정된 후, 해당 플랫폼에 맞는 검증된 스킬을 검색하고 설치한다.
 
 **Actions:**
 
-1. `docs/ssot/dev-plan.md` 파일 생성
+1. **스킬 검색** (아래 순서대로 시도)
+   1. Claude Code 플러그인/마켓플레이스에서 해당 플랫폼 스킬 검색 (예: `claude plugin search swift`, `claude plugin search flutter`)
+   2. GitHub에서 Claude Code 스킬 검색 (예: `gh search repos "claude code skill swift"`)
+   3. 위 두 곳에서 못 찾으면, 인터넷 검색으로 해당 플랫폼 best practice를 조사하여 `.claude/skills/`에 스킬 자동 생성
+
+2. **스킬 설치**
+   - 검색된 스킬을 프로젝트의 `.claude/skills/`에 설치한다
+   - 설치 후 스킬이 정상 동작하는지 확인한다
+
+3. **설치된 스킬 목록 기록**
+   - dev-plan 문서의 "기술 스택 상세" 섹션 아래에 설치된 스킬 목록을 기록한다
+
+**플랫폼별 예시:**
+- Swift/iOS → swift-concurrency, swift-testing, swiftui-pro 등
+- Flutter → flutter-state, flutter-testing 등
+- Next.js → nextjs-patterns, react-testing 등
+
+### Step 4: 문서 생성 및 저장
+
+**Actions:**
+
+1. `docs/ssot/dev/dev-plan.md` 파일 생성
 2. 다음 구조로 작성:
 
 ```markdown
@@ -79,7 +102,9 @@ description: PRD(기획서)와 디자인 결과물을 기반으로 개발 계획
 ## 1. 기술 아키텍처
 
 ### 시스템 구성도
-[텍스트 다이어그램]
+별도 HTML/CSS 파일로 생성: `docs/ssot/dev/architecture.html`
+- 프론트엔드, 백엔드, DB, 외부 서비스 간 관계를 시각화
+- 브라우저에서 바로 열어볼 수 있는 standalone HTML 파일로 작성
 
 ### 기술 스택 상세
 | 영역 | 기술 | 선택 이유 |
@@ -88,6 +113,11 @@ description: PRD(기획서)와 디자인 결과물을 기반으로 개발 계획
 | 백엔드 | ... | ... |
 | DB | ... | ... |
 | 배포 | ... | ... |
+
+### 설치된 플랫폼 스킬
+| 스킬 이름 | 출처 | 용도 |
+|-----------|------|------|
+| ... | 마켓플레이스/GitHub/자동생성 | ... |
 
 ## 2. 디렉토리 구조
 [트리 형태]
@@ -110,8 +140,15 @@ description: PRD(기획서)와 디자인 결과물을 기반으로 개발 계획
 
 3. Git 커밋 + 푸시
 
+### Step 5: 최종 리뷰
+
+**Actions:**
+
+1. 생성된 `docs/ssot/dev/dev-plan.md`의 핵심 내용을 요약하여 사용자에게 보여준다
+2. **사용자 확인**: "개발 계획서를 생성했습니다. 수정이 필요한 부분이 있으면 말씀해주세요."
+
 **Expected Output:**
-기술 아키텍처, 디렉토리 구조, 데이터 모델, API 설계, 핵심 컴포넌트가 포함된 `docs/ssot/dev-plan.md`
+기술 아키텍처, 디렉토리 구조, 데이터 모델, API 설계, 핵심 컴포넌트가 포함된 `docs/ssot/dev/dev-plan.md` + 시스템 구성도 `docs/ssot/dev/architecture.html`
 
 ---
 
@@ -128,6 +165,7 @@ description: PRD(기획서)와 디자인 결과물을 기반으로 개발 계획
 - [ ] 디렉토리 구조가 기술 스택에 적합한가?
 - [ ] 데이터 모델이 유저 플로우의 모든 데이터를 커버하는가?
 - [ ] 외부 서비스 의존성이 명시되었는가?
+- [ ] 플랫폼 스킬이 검색/설치되고 문서에 기록되었는가?
 - [ ] MVP 범위에 맞는 복잡도인가? (과도한 설계 금지)
 
 ---
