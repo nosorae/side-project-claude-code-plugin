@@ -1,9 +1,14 @@
 #!/bin/bash
 # 대화 기록 자동 로깅 훅
 # UserPromptSubmit: 사용자 명령 원문 기록
-# PostToolUse: 도구명 + 핵심 입력 + 출력 요약 기록
+# PostToolUse: 도구명 + 핵심 입력 기록
 
-SESSION_ID="${CLAUDE_SESSION_ID:-unknown}"
+# stdin에서 JSON 읽기
+INPUT=$(cat)
+
+# stdin JSON에서 session_id 파싱 (환경변수 fallback)
+SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty' 2>/dev/null)
+SESSION_ID="${SESSION_ID:-${CLAUDE_SESSION_ID:-unknown}}"
 SESSION_SHORT="${SESSION_ID:0:8}"
 DATE=$(date +%Y-%m-%d)
 LOG_DIR="docs/sessions"
@@ -18,11 +23,8 @@ if [ ! -f "$LOG_FILE" ]; then
   echo "" >> "$LOG_FILE"
 fi
 
-# stdin에서 JSON 읽기
-INPUT=$(cat)
-
 # 이벤트 타입 파싱
-EVENT_TYPE=$(echo "$INPUT" | jq -r '.event // empty' 2>/dev/null)
+EVENT_TYPE=$(echo "$INPUT" | jq -r '.hook_event_name // empty' 2>/dev/null)
 TIMESTAMP=$(date +%H:%M:%S)
 
 case "$EVENT_TYPE" in
