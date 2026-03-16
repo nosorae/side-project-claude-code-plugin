@@ -8,7 +8,7 @@
 
 ### 핵심 개념
 
-이 레포는 **사이드 프로젝트 전용 워크플로우 템플릿**입니다. `/init-project`로 새 프로젝트를 만들면, 규칙과 스킬이 자동으로 복사되어 Claude Code가 아래 파이프라인을 따라 프로젝트를 진행합니다.
+이 레포는 **사이드 프로젝트 전용 워크플로우 템플릿**입니다. `/init-project`로 새 프로젝트를 만들면, 규칙과 스킬이 자동으로 복사되고 **`product-blueprint.html`(마스터 문서)**이 생성됩니다. 이후 각 파이프라인 스킬이 완료될 때마다 이 마스터 문서가 자동 업데이트되어, 프로젝트의 기획/디자인/개발 상태를 항상 한 곳에서 확인할 수 있습니다.
 
 ### 전체 파이프라인
 
@@ -23,8 +23,22 @@
 | 4 | `/dev-plan` | `dev-plan.md` + 아키텍처 HTML | 플랫폼 스킬 자동 설치 |
 | 5 | `/dev-roadmap` | `deploy-roadmap.md` + 타임라인 HTML | M0~M3 마일스톤 분류 |
 | 6 | `/create-issues` | GitHub Issues | 에픽 + 하위 작업 자동 생성 |
-| — | `/product-blueprint` | `product-blueprint.html` | 언제든 실행 (SSOT 통합 마스터) |
+| — | `/product-blueprint` | `product-blueprint.html` | 각 스킬 완료 시 자동 업데이트 (마스터 문서) |
 | — | `/sync-roadmap` | 로드맵 업데이트 | 구현 중 수시 실행 |
+
+### product-blueprint.html (마스터 문서)
+
+`/init-project` 시점에 빈 껍데기로 생성되며, 각 파이프라인 스킬이 완료될 때마다 해당 탭이 자동으로 채워집니다.
+
+| 탭 | 업데이트 시점 | 내용 |
+|----|-------------|------|
+| **기획** | `/app-plan` 완료 | MVP 범위, 핵심 기능, 유저 플로우 |
+| **디자인 시스템** | `/design-system-to-figma` 완료 | 색상 토큰, 타이포, 컴포넌트 라이브러리 |
+| **화면 디자인** | `/prd-to-figma` 완료 | 각 화면의 디자인 + PRD 요구사항을 나란히 표시 |
+| **개발 계획** | `/dev-plan` 완료 | 아키텍처, 데이터 모델, API 설계 |
+| **로드맵** | `/dev-roadmap` 완료 | 마일스톤별 진행률, claude-task/human-task 분류 |
+
+> **이 파일 하나만 열면 프로젝트 전체 상태를 파악할 수 있습니다.**
 
 ### 사람과 AI의 역할 분담
 
@@ -138,7 +152,7 @@ my-project/
 | 스킬 | 설명 |
 |------|------|
 | `/init-project` | 새 프로젝트 부트스트랩 (이 레포의 규칙/스킬을 새 프로젝트에 복사) |
-| `/product-blueprint` | SSOT 문서 통합 마스터 HTML 생성 (파이프라인 언제든 실행 가능) |
+| `/product-blueprint` | SSOT 통합 마스터 HTML (init-project에서 생성, 각 스킬 완료 시 자동 업데이트) |
 | `/sync-roadmap` | GitHub Issues/PR 상태 기반 로드맵 문서 자동 최신화 |
 | `/handoff` | 세션 종료 시 핸드오프 문서 생성 (10개 필수 섹션 + 커밋) |
 | `/resume` | 새 세션에서 프로젝트 상태 파악 + 이어하기 |

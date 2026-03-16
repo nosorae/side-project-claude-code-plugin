@@ -203,6 +203,10 @@ mcp__figma__generate_figma_design(
 lsof -ti:8765 | xargs kill -9 2>/dev/null || true
 ```
 
+### Step 4.5: product-blueprint 자동 업데이트
+
+product-blueprint.html의 디자인 시스템 탭을 자동 업데이트한다. `/product-blueprint --tab=디자인시스템` 실행.
+
 ### Step 5: 완료 보고
 
 최종 응답에 반드시 포함:

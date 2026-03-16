@@ -147,10 +147,64 @@ user_invocable: true
 
 ---
 
+## 실행 모드
+
+### 전체 생성 모드 (기본)
+
+인자 없이 실행하면 모든 SSOT 문서를 읽어 처음부터 `product-blueprint.html`을 생성한다.
+
+```
+/product-blueprint
+```
+
+### 부분 업데이트 모드
+
+`--tab` 인자로 특정 탭만 갱신한다. 기존 `product-blueprint.html`이 반드시 존재해야 한다.
+
+```
+/product-blueprint --tab=기획
+/product-blueprint --tab=디자인시스템
+/product-blueprint --tab=화면디자인
+/product-blueprint --tab=개발
+/product-blueprint --tab=로드맵
+```
+
+**부분 업데이트 절차:**
+
+1. 기존 `docs/ssot/product-blueprint.html`을 읽는다
+2. 지정된 탭에 해당하는 SSOT 소스 문서를 읽는다:
+   - `기획` → `docs/ssot/prd/*.md`
+   - `디자인시스템` → `docs/ssot/design/system/tokens.css`
+   - `화면디자인` → `docs/ssot/design/screens/screen-*.html` + `docs/ssot/prd/*.md` (화면 요구사항)
+   - `개발` → `docs/ssot/dev/dev-plan.md`
+   - `로드맵` → `docs/ssot/dev/deploy-roadmap.md`
+3. 해당 탭의 콘텐츠 섹션만 최신 SSOT 문서 내용으로 교체한다
+4. 나머지 탭의 콘텐츠는 그대로 유지한다
+5. 커밋 메시지: `Docs: 제품 청사진 부분 업데이트 (탭: {탭이름})`
+
+> **주의**: `product-blueprint.html`이 존재하지 않는 상태에서 `--tab` 인자를 사용하면 에러를 출력하고, 전체 생성 모드를 먼저 실행하도록 안내한다.
+
+---
+
+## 화면 디자인 탭 레이아웃
+
+화면 디자인 탭에서는 각 화면을 **2컬럼 레이아웃**으로 표시한다:
+
+| 왼쪽 컬럼 | 오른쪽 컬럼 |
+|-----------|------------|
+| 해당 화면의 디자인 HTML 미리보기 (iframe) | PRD에서 추출한 해당 화면의 요구사항 |
+
+- 각 화면(`screen-*.html`)마다 2컬럼 행을 생성한다
+- 화면 파일명과 PRD 내 화면 섹션을 매칭하여 해당 요구사항만 추출한다
+- 모바일 뷰포트(390px 이하)에서는 1컬럼으로 스택한다 (미리보기 → 요구사항 순서)
+
+---
+
 ## 갱신 정책
 
 - SSOT 문서가 생성/수정될 때마다 이 스킬을 재실행하여 블루프린트를 최신 상태로 유지한다
-- 기존 `product-blueprint.html`이 있으면 덮어쓴다
+- 단일 문서만 변경된 경우 부분 업데이트 모드(`--tab`)를 우선 사용한다
+- 여러 문서가 동시에 변경되었거나 구조 변경이 있으면 전체 생성 모드를 사용한다
 - 파이프라인의 어떤 단계에서든 실행 가능하다 (존재하는 문서만 반영)
 
 ---
