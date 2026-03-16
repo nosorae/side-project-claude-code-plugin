@@ -12,7 +12,7 @@
 
 ### 전체 파이프라인
 
-> **[다이어그램 열기 (HTML)](docs/diagrams/pipeline.html)** — 브라우저에서 시각적 플로우차트 확인
+<a href="docs/diagrams/pipeline.html"><img src="docs/diagrams/pipeline.png" alt="스킬 파이프라인 다이어그램" width="100%"></a>
 
 | 순서 | 스킬 | 산출물 | 비고 |
 |:---:|------|--------|------|
@@ -55,7 +55,7 @@
 
 ### 작업 흐름 예시
 
-> **[다이어그램 열기 (HTML)](docs/diagrams/workflow-example.html)** — 브라우저에서 세션별 타임라인 확인
+<a href="docs/diagrams/workflow-example.html"><img src="docs/diagrams/workflow-example.png" alt="작업 흐름 예시 다이어그램" width="100%"></a>
 
 <table>
 <tr><th colspan="3">세션 1 — 기획 + 디자인</th></tr>
@@ -204,7 +204,7 @@ claude plugin install --plugin-dir ~/side-project-claude-settings
 
 ## 스킬 의존성
 
-> **[다이어그램 열기 (HTML)](docs/diagrams/dependencies.html)** — 브라우저에서 의존성 그래프 확인
+<a href="docs/diagrams/dependencies.html"><img src="docs/diagrams/dependencies.png" alt="스킬 의존성 그래프" width="100%"></a>
 
 <table>
 <tr>

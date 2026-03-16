@@ -3,179 +3,62 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>스킬 의존성 그래프</title>
+<title>Skill Dependency Graph</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display&display=swap');
+
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-    background:#f0f2f5;
-    color:#1a1a2e;
+    font-family:'DM Sans',sans-serif;
+    background:#0a0a0f;
+    color:#e8e8ed;
     min-height:100vh;
     display:flex;
     justify-content:center;
+    align-items:center;
     padding:40px 20px;
+    overflow-x:hidden;
   }
+
   .container{
     width:100%;
-    max-width:1100px;
+    max-width:1200px;
     min-width:0;
   }
+
   h1{
     text-align:center;
-    font-size:1.75rem;
-    font-weight:700;
-    margin-bottom:8px;
-    color:#1a1a2e;
+    font-family:'DM Serif Display',serif;
+    font-size:2.2rem;
+    font-weight:400;
+    margin-bottom:6px;
+    color:#f0ece2;
+    letter-spacing:0.02em;
   }
+
   .subtitle{
     text-align:center;
-    font-size:0.9rem;
-    color:#6b7280;
-    margin-bottom:40px;
-  }
-
-  /* ── Graph canvas ── */
-  .graph{
-    position:relative;
-    width:100%;
-    padding:20px 0 10px;
-  }
-
-  /* SVG arrows layer */
-  .arrows-layer{
-    position:absolute;
-    top:0;left:0;
-    width:100%;
-    height:100%;
-    pointer-events:none;
-    z-index:1;
-  }
-
-  /* ── Rows ── */
-  .row{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:0;
-    position:relative;
-    z-index:2;
-    margin-bottom:0;
-  }
-  .row.main-entry{ margin-bottom:28px; }
-  .row.branch-row{ margin-bottom:28px; }
-  .row.hub{ margin-bottom:0; padding-bottom:0; }
-
-  /* ── Node cards ── */
-  .node{
-    display:inline-flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    padding:12px 22px;
-    border-radius:14px;
-    font-weight:600;
-    font-size:0.92rem;
-    white-space:nowrap;
-    box-shadow:0 2px 8px rgba(0,0,0,0.08);
-    border:2px solid transparent;
-    position:relative;
-    transition:transform .15s,box-shadow .15s;
-    cursor:default;
-  }
-  .node:hover{
-    transform:translateY(-2px);
-    box-shadow:0 6px 20px rgba(0,0,0,0.12);
-  }
-  .node .label{ font-size:0.78rem; font-weight:400; color:rgba(0,0,0,0.5); margin-top:3px; }
-
-  /* Color schemes */
-  .node.blue{  background:#e8f0fe; border-color:#4285f4; color:#1a56db; }
-  .node.purple{ background:#f3e8ff; border-color:#9b59b6; color:#7c3aed; }
-  .node.teal{  background:#e6fbf5; border-color:#14b8a6; color:#0d7c66; }
-  .node.gray{  background:#f3f4f6; border-color:#9ca3af; color:#4b5563; }
-  .node.optional{
-    border-style:dashed;
-    background:#fefce8;
-    border-color:#f59e0b;
-    color:#92400e;
-  }
-
-  /* ── Edge connectors (horizontal) ── */
-  .edge{
-    display:flex;
-    align-items:center;
-    position:relative;
-    z-index:2;
-    min-width:60px;
-  }
-  .edge .line{
-    flex:1;
-    height:2px;
-    position:relative;
-  }
-  .edge .line::after{
-    content:'';
-    position:absolute;
-    right:-1px;top:50%;
-    transform:translateY(-50%);
-    border:6px solid transparent;
-  }
-  /* colors */
-  .edge.blue .line{ background:#4285f4; }
-  .edge.blue .line::after{ border-left-color:#4285f4; }
-  .edge.purple .line{ background:#9b59b6; }
-  .edge.purple .line::after{ border-left-color:#9b59b6; }
-  .edge.teal .line{ background:#14b8a6; }
-  .edge.teal .line::after{ border-left-color:#14b8a6; }
-  .edge.optional .line{ background:repeating-linear-gradient(90deg,#f59e0b 0 6px,transparent 6px 10px); height:2px; }
-  .edge.optional .line::after{ border-left-color:#f59e0b; }
-
-  .edge .prereq{
-    position:absolute;
-    top:-18px;
-    left:50%;
-    transform:translateX(-50%);
-    font-size:0.7rem;
-    color:#6b7280;
-    white-space:nowrap;
-    background:#f0f2f5;
-    padding:1px 6px;
-    border-radius:4px;
-  }
-
-  /* ── Branch fork area ── */
-  .fork-area{
-    display:flex;
-    flex-direction:column;
-    gap:24px;
-    position:relative;
-    z-index:2;
-  }
-  .branch-label{
-    font-size:0.72rem;
-    font-weight:600;
+    font-size:0.85rem;
+    color:#5a5a6e;
+    margin-bottom:44px;
+    font-weight:300;
+    letter-spacing:0.06em;
     text-transform:uppercase;
-    letter-spacing:0.05em;
-    margin-bottom:4px;
-    text-align:left;
   }
-  .branch-label.purple-text{ color:#9b59b6; }
-  .branch-label.teal-text{ color:#14b8a6; }
 
-  /* ── Section divider ── */
-  .divider{
-    margin:44px 0 28px;
-    border:none;
-    border-top:1px dashed #d1d5db;
+  .svg-graph{
+    width:100%;
+    overflow-x:auto;
+  }
+  .svg-graph svg{
+    display:block;
+    margin:0 auto;
   }
 
   /* ── Utilities section ── */
-  .section-title{
-    font-size:1rem;
-    font-weight:600;
-    color:#6b7280;
-    margin-bottom:16px;
-    text-align:center;
+  .utilities{
+    margin-top:32px;
   }
   .chips{
     display:flex;
@@ -186,185 +69,228 @@
   .chip{
     display:inline-flex;
     align-items:center;
-    gap:6px;
-    padding:8px 18px;
-    border-radius:20px;
-    font-size:0.85rem;
+    gap:8px;
+    padding:10px 20px;
+    border-radius:24px;
+    font-size:0.82rem;
     font-weight:500;
-    background:#ecfdf5;
-    color:#065f46;
-    border:1.5px solid #a7f3d0;
-    box-shadow:0 1px 4px rgba(0,0,0,0.05);
-    transition:transform .15s,box-shadow .15s;
+    background:rgba(255,255,255,0.03);
+    color:#8a8a9a;
+    border:1px solid rgba(255,255,255,0.06);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    transition:all .2s ease;
     cursor:default;
   }
   .chip:hover{
+    background:rgba(255,255,255,0.06);
+    border-color:rgba(255,255,255,0.1);
+    color:#b0b0c0;
     transform:translateY(-1px);
-    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  }
+  .chip strong{
+    color:#c0c0d0;
+    font-weight:600;
+    font-size:0.84rem;
   }
   .chip .desc{
-    font-weight:400;
+    font-weight:300;
     font-size:0.75rem;
-    color:#6b7280;
-  }
-
-  /* ── Legend ── */
-  .legend{
-    margin-top:36px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:20px;
-    justify-content:center;
-    font-size:0.78rem;
-    color:#6b7280;
-  }
-  .legend-item{
-    display:flex;
-    align-items:center;
-    gap:6px;
-  }
-  .legend-swatch{
-    width:14px;height:14px;border-radius:4px;border:2px solid;
-  }
-
-  /* ── Responsive SVG graph ── */
-  .svg-graph{
-    width:100%;
-    overflow-x:auto;
-  }
-  .svg-graph svg{
-    display:block;
-    margin:0 auto;
+    color:#5a5a6e;
   }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>스킬 의존성 그래프</h1>
-  <p class="subtitle">스킬 파이프라인 및 유틸리티 의존 관계</p>
+  <h1>Skill Dependency Graph</h1>
+  <p class="subtitle">Pipeline Architecture &amp; Utility Skills</p>
 
   <div class="svg-graph">
-    <svg viewBox="0 0 1060 420" xmlns="http://www.w3.org/2000/svg" style="max-width:1060px;width:100%;height:auto;">
+    <svg viewBox="0 0 1200 560" xmlns="http://www.w3.org/2000/svg" style="max-width:1200px;width:100%;height:auto;">
       <defs>
-        <marker id="arrow-blue" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-          <path d="M0,0 L10,4 L0,8 Z" fill="#4285f4"/>
-        </marker>
-        <marker id="arrow-purple" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-          <path d="M0,0 L10,4 L0,8 Z" fill="#9b59b6"/>
-        </marker>
-        <marker id="arrow-teal" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-          <path d="M0,0 L10,4 L0,8 Z" fill="#14b8a6"/>
-        </marker>
-        <marker id="arrow-orange" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
-          <path d="M0,0 L10,4 L0,8 Z" fill="#f59e0b"/>
-        </marker>
-        <!-- Soft shadow -->
-        <filter id="shadow" x="-8%" y="-8%" width="116%" height="132%">
-          <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.08"/>
+        <!-- Dot grid pattern -->
+        <pattern id="dotgrid" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.6" fill="rgba(255,255,255,0.04)"/>
+        </pattern>
+
+        <!-- Radial background gradient -->
+        <radialGradient id="bgGrad" cx="50%" cy="45%" r="55%">
+          <stop offset="0%" stop-color="#12121a"/>
+          <stop offset="100%" stop-color="#0a0a0f"/>
+        </radialGradient>
+
+        <!-- Glow filters -->
+        <filter id="glowPurple" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+          <feColorMatrix in="blur" type="matrix" values="0.4 0 0 0 0.4  0 0.2 0 0 0.1  0.6 0 0 0 0.7  0 0 0 0.3 0"/>
+          <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
-        <filter id="shadow-hover" x="-8%" y="-8%" width="116%" height="140%">
-          <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.12"/>
+        <filter id="glowTeal" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+          <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0  0.3 0.5 0 0 0.3  0.3 0.5 0 0 0.3  0 0 0 0.3 0"/>
+          <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
+        <filter id="glowAmber" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+          <feColorMatrix in="blur" type="matrix" values="0.6 0 0 0 0.3  0.4 0 0 0 0.2  0 0 0 0 0  0 0 0 0.25 0"/>
+          <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glowGray" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+          <feColorMatrix in="blur" type="matrix" values="0.2 0 0 0 0.1  0.2 0 0 0 0.1  0.2 0 0 0 0.1  0 0 0 0.15 0"/>
+          <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+
+        <!-- Card shadow -->
+        <filter id="cardShadow" x="-15%" y="-15%" width="130%" height="145%">
+          <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.4"/>
+        </filter>
+
+        <!-- Arrow markers -->
+        <marker id="arrow-purple" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#a78bfa"/>
+        </marker>
+        <marker id="arrow-teal" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#5eead4"/>
+        </marker>
+        <marker id="arrow-gray" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#6b6b7a"/>
+        </marker>
+        <marker id="arrow-amber" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#d4a24c"/>
+        </marker>
+
+        <!-- Glass fill gradients -->
+        <linearGradient id="glassPurple" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="rgba(139,92,246,0.12)"/>
+          <stop offset="100%" stop-color="rgba(88,48,180,0.06)"/>
+        </linearGradient>
+        <linearGradient id="glassTeal" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="rgba(94,234,212,0.10)"/>
+          <stop offset="100%" stop-color="rgba(20,184,166,0.05)"/>
+        </linearGradient>
+        <linearGradient id="glassAmber" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="rgba(245,186,70,0.14)"/>
+          <stop offset="100%" stop-color="rgba(180,120,30,0.07)"/>
+        </linearGradient>
+        <linearGradient id="glassGray" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="rgba(160,160,180,0.08)"/>
+          <stop offset="100%" stop-color="rgba(100,100,120,0.04)"/>
+        </linearGradient>
+
+        <!-- Divider gradient -->
+        <linearGradient id="dividerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0)"/>
+          <stop offset="20%" stop-color="rgba(255,255,255,0.08)"/>
+          <stop offset="50%" stop-color="rgba(255,255,255,0.12)"/>
+          <stop offset="80%" stop-color="rgba(255,255,255,0.08)"/>
+          <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+        </linearGradient>
       </defs>
+
+      <!-- Background -->
+      <rect width="1200" height="560" fill="url(#bgGrad)"/>
+      <rect width="1200" height="560" fill="url(#dotgrid)"/>
 
       <!-- ====== EDGES ====== -->
 
-      <!-- interview -> app-plan (dashed) -->
-      <line x1="135" y1="195" x2="224" y2="195" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-orange)"/>
-      <text x="180" y="183" text-anchor="middle" fill="#92400e" font-size="11" font-family="sans-serif">선택</text>
+      <!-- /interview -> /app-plan (dashed, muted) -->
+      <line x1="228" y1="235" x2="370" y2="235" stroke="#4a4a58" stroke-width="1.5" stroke-dasharray="6,5" marker-end="url(#arrow-gray)" opacity="0.7"/>
+      <text x="299" y="222" text-anchor="middle" fill="#5a5a68" font-size="10" font-family="'DM Sans',sans-serif" font-weight="400" font-style="italic">optional</text>
 
-      <!-- app-plan -> fork point -->
-      <!-- Design branch: app-plan -> design-system-to-figma -->
-      <path d="M 370,195 C 400,195 400,100 430,100" fill="none" stroke="#9b59b6" stroke-width="2" marker-end="url(#arrow-purple)"/>
+      <!-- /app-plan -> /design-system-to-figma (purple curve up-right) -->
+      <path d="M 575,215 C 620,215 640,125 690,125" fill="none" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow-purple)" filter="url(#glowPurple)" opacity="0.8"/>
+      <text x="618" y="158" text-anchor="middle" fill="#8b5cf6" font-size="9.5" font-family="'DM Sans',sans-serif" font-weight="400" opacity="0.8">needs PRD</text>
 
-      <!-- Dev branch: app-plan -> dev-plan -->
-      <path d="M 370,195 C 400,195 400,295 430,295" fill="none" stroke="#14b8a6" stroke-width="2" marker-end="url(#arrow-teal)"/>
+      <!-- /app-plan -> /dev-plan (teal curve down-right) -->
+      <path d="M 575,255 C 620,255 640,345 690,345" fill="none" stroke="#5eead4" stroke-width="1.5" marker-end="url(#arrow-teal)" filter="url(#glowTeal)" opacity="0.8"/>
+      <text x="618" y="316" text-anchor="middle" fill="#2dd4bf" font-size="9.5" font-family="'DM Sans',sans-serif" font-weight="400" opacity="0.8">needs PRD</text>
 
-      <!-- design-system-to-figma -> prd-to-figma -->
-      <line x1="620" y1="100" x2="720" y2="100" stroke="#9b59b6" stroke-width="2" marker-end="url(#arrow-purple)"/>
-      <text x="670" y="86" text-anchor="middle" fill="#7c3aed" font-size="10" font-family="sans-serif">tokens.css 필요</text>
+      <!-- /design-system-to-figma -> /prd-to-figma -->
+      <line x1="892" y1="125" x2="960" y2="125" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow-purple)" filter="url(#glowPurple)" opacity="0.8"/>
+      <text x="926" y="112" text-anchor="middle" fill="#8b5cf6" font-size="9" font-family="'DM Sans',sans-serif" font-weight="400" opacity="0.7">tokens.css</text>
 
-      <!-- dev-plan -> dev-roadmap -->
-      <line x1="560" y1="295" x2="640" y2="295" stroke="#14b8a6" stroke-width="2" marker-end="url(#arrow-teal)"/>
-      <text x="600" y="281" text-anchor="middle" fill="#0d7c66" font-size="10" font-family="sans-serif">PRD 필요</text>
+      <!-- /dev-plan -> /dev-roadmap -->
+      <line x1="822" y1="345" x2="878" y2="345" stroke="#5eead4" stroke-width="1.5" marker-end="url(#arrow-teal)" filter="url(#glowTeal)" opacity="0.8"/>
+      <text x="850" y="332" text-anchor="middle" fill="#2dd4bf" font-size="9" font-family="'DM Sans',sans-serif" font-weight="400" opacity="0.7">dev-plan.md</text>
 
-      <!-- dev-roadmap -> create-issues -->
-      <line x1="790" y1="295" x2="870" y2="295" stroke="#14b8a6" stroke-width="2" marker-end="url(#arrow-teal)"/>
-      <text x="830" y="275" text-anchor="middle" fill="#0d7c66" font-size="10" font-family="sans-serif">dev-plan 필요</text>
+      <!-- /dev-roadmap -> /create-issues -->
+      <line x1="1020" y1="345" x2="1028" y2="345" stroke="#5eead4" stroke-width="1.5" marker-end="url(#arrow-teal)" filter="url(#glowTeal)" opacity="0.8"/>
+      <text x="1024" y="332" text-anchor="middle" fill="#2dd4bf" font-size="8.5" font-family="'DM Sans',sans-serif" font-weight="400" opacity="0.7"/>
 
       <!-- Branch labels -->
-      <text x="415" y="56" fill="#9b59b6" font-size="11" font-weight="600" font-family="sans-serif">DESIGN BRANCH</text>
-      <text x="415" y="257" fill="#14b8a6" font-size="11" font-weight="600" font-family="sans-serif">DEV BRANCH</text>
+      <text x="700" y="78" fill="#a78bfa" font-size="10" font-family="'DM Sans',sans-serif" font-weight="600" letter-spacing="0.12em" opacity="0.5">DESIGN BRANCH</text>
+      <text x="700" y="398" fill="#5eead4" font-size="10" font-family="'DM Sans',sans-serif" font-weight="600" letter-spacing="0.12em" opacity="0.5">DEV BRANCH</text>
 
       <!-- ====== NODES ====== -->
 
-      <!-- /interview (optional, dashed) -->
-      <g>
-        <rect x="30" y="170" width="105" height="50" rx="14" ry="14"
-              fill="#fefce8" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,3" filter="url(#shadow)"/>
-        <text x="82" y="193" text-anchor="middle" fill="#92400e" font-size="13" font-weight="600" font-family="sans-serif">/interview</text>
-        <text x="82" y="208" text-anchor="middle" fill="#b0890a" font-size="9.5" font-family="sans-serif">인터뷰 기반 기획</text>
+      <!-- /interview (muted, dashed border) -->
+      <g filter="url(#glowGray)">
+        <rect x="100" y="210" width="128" height="50" rx="14" ry="14"
+              fill="url(#glassGray)" stroke="#4a4a58" stroke-width="1.2" stroke-dasharray="5,4" opacity="0.8"/>
+        <text x="164" y="233" text-anchor="middle" fill="#7a7a8a" font-size="13" font-weight="600" font-family="'DM Sans',sans-serif">/interview</text>
+        <text x="164" y="249" text-anchor="middle" fill="#4a4a58" font-size="9.5" font-family="'DM Sans',sans-serif" font-weight="300">interview-based planning</text>
       </g>
 
-      <!-- /app-plan -->
-      <g>
-        <rect x="228" y="170" width="140" height="50" rx="14" ry="14"
-              fill="#e8f0fe" stroke="#4285f4" stroke-width="2" filter="url(#shadow)"/>
-        <text x="298" y="193" text-anchor="middle" fill="#1a56db" font-size="13" font-weight="600" font-family="sans-serif">/app-plan</text>
-        <text x="298" y="208" text-anchor="middle" fill="#4272c4" font-size="9.5" font-family="sans-serif">기획서 (PRD) 생성</text>
+      <!-- /app-plan (CENTRAL HUB - largest, amber/gold) -->
+      <g filter="url(#glowAmber)">
+        <rect x="380" y="198" width="195" height="74" rx="18" ry="18"
+              fill="url(#glassAmber)" stroke="#d4a24c" stroke-width="1.8"/>
+        <text x="477" y="230" text-anchor="middle" fill="#f5c342" font-size="18" font-weight="600" font-family="'DM Sans',sans-serif">/app-plan</text>
+        <text x="477" y="252" text-anchor="middle" fill="#a08030" font-size="10.5" font-family="'DM Sans',sans-serif" font-weight="400">PRD Generation &#183; Central Hub</text>
       </g>
 
       <!-- /design-system-to-figma -->
-      <g>
-        <rect x="434" y="74" width="185" height="52" rx="14" ry="14"
-              fill="#f3e8ff" stroke="#9b59b6" stroke-width="2" filter="url(#shadow)"/>
-        <text x="526" y="97" text-anchor="middle" fill="#7c3aed" font-size="12.5" font-weight="600" font-family="sans-serif">/design-system-to-figma</text>
-        <text x="526" y="113" text-anchor="middle" fill="#8b5fb0" font-size="9.5" font-family="sans-serif">토큰 + 디자인 시스템</text>
+      <g filter="url(#glowPurple)">
+        <rect x="692" y="100" width="200" height="52" rx="14" ry="14"
+              fill="url(#glassPurple)" stroke="#7c3aed" stroke-width="1.3"/>
+        <text x="792" y="123" text-anchor="middle" fill="#c4b5fd" font-size="12" font-weight="600" font-family="'DM Sans',sans-serif">/design-system-to-figma</text>
+        <text x="792" y="139" text-anchor="middle" fill="#7c6aad" font-size="9.5" font-family="'DM Sans',sans-serif" font-weight="300">tokens + design system</text>
       </g>
 
       <!-- /prd-to-figma -->
-      <g>
-        <rect x="724" y="74" width="150" height="52" rx="14" ry="14"
-              fill="#f3e8ff" stroke="#9b59b6" stroke-width="2" filter="url(#shadow)"/>
-        <text x="799" y="97" text-anchor="middle" fill="#7c3aed" font-size="12.5" font-weight="600" font-family="sans-serif">/prd-to-figma</text>
-        <text x="799" y="113" text-anchor="middle" fill="#8b5fb0" font-size="9.5" font-family="sans-serif">화면별 디자인</text>
+      <g filter="url(#glowPurple)">
+        <rect x="962" y="100" width="155" height="52" rx="14" ry="14"
+              fill="url(#glassPurple)" stroke="#7c3aed" stroke-width="1.3"/>
+        <text x="1039" y="123" text-anchor="middle" fill="#c4b5fd" font-size="12" font-weight="600" font-family="'DM Sans',sans-serif">/prd-to-figma</text>
+        <text x="1039" y="139" text-anchor="middle" fill="#7c6aad" font-size="9.5" font-family="'DM Sans',sans-serif" font-weight="300">screen designs</text>
       </g>
 
       <!-- /dev-plan -->
-      <g>
-        <rect x="434" y="270" width="125" height="50" rx="14" ry="14"
-              fill="#e6fbf5" stroke="#14b8a6" stroke-width="2" filter="url(#shadow)"/>
-        <text x="496" y="293" text-anchor="middle" fill="#0d7c66" font-size="13" font-weight="600" font-family="sans-serif">/dev-plan</text>
-        <text x="496" y="308" text-anchor="middle" fill="#1a8a74" font-size="9.5" font-family="sans-serif">개발 계획서</text>
+      <g filter="url(#glowTeal)">
+        <rect x="692" y="320" width="130" height="52" rx="14" ry="14"
+              fill="url(#glassTeal)" stroke="#14b8a6" stroke-width="1.3"/>
+        <text x="757" y="343" text-anchor="middle" fill="#5eead4" font-size="12.5" font-weight="600" font-family="'DM Sans',sans-serif">/dev-plan</text>
+        <text x="757" y="359" text-anchor="middle" fill="#2a9a8a" font-size="9.5" font-family="'DM Sans',sans-serif" font-weight="300">development plan</text>
       </g>
 
       <!-- /dev-roadmap -->
-      <g>
-        <rect x="644" y="270" width="145" height="50" rx="14" ry="14"
-              fill="#e6fbf5" stroke="#14b8a6" stroke-width="2" filter="url(#shadow)"/>
-        <text x="716" y="293" text-anchor="middle" fill="#0d7c66" font-size="13" font-weight="600" font-family="sans-serif">/dev-roadmap</text>
-        <text x="716" y="308" text-anchor="middle" fill="#1a8a74" font-size="9.5" font-family="sans-serif">배포 로드맵</text>
+      <g filter="url(#glowTeal)">
+        <rect x="880" y="320" width="140" height="52" rx="14" ry="14"
+              fill="url(#glassTeal)" stroke="#14b8a6" stroke-width="1.3"/>
+        <text x="950" y="343" text-anchor="middle" fill="#5eead4" font-size="12.5" font-weight="600" font-family="'DM Sans',sans-serif">/dev-roadmap</text>
+        <text x="950" y="359" text-anchor="middle" fill="#2a9a8a" font-size="9.5" font-family="'DM Sans',sans-serif" font-weight="300">deploy roadmap</text>
       </g>
 
       <!-- /create-issues -->
-      <g>
-        <rect x="874" y="270" width="150" height="50" rx="14" ry="14"
-              fill="#e6fbf5" stroke="#14b8a6" stroke-width="2" filter="url(#shadow)"/>
-        <text x="949" y="288" text-anchor="middle" fill="#0d7c66" font-size="12.5" font-weight="600" font-family="sans-serif">/create-issues</text>
-        <text x="949" y="303" text-anchor="middle" fill="#1a8a74" font-size="9.5" font-family="sans-serif">이슈 생성</text>
-        <text x="949" y="314" text-anchor="middle" fill="#6b7280" font-size="8.5" font-family="sans-serif">roadmap + GitHub 필요</text>
+      <g filter="url(#glowTeal)">
+        <rect x="1032" y="320" width="145" height="52" rx="14" ry="14"
+              fill="url(#glassTeal)" stroke="#14b8a6" stroke-width="1.3"/>
+        <text x="1104" y="340" text-anchor="middle" fill="#5eead4" font-size="12" font-weight="600" font-family="'DM Sans',sans-serif">/create-issues</text>
+        <text x="1104" y="356" text-anchor="middle" fill="#2a9a8a" font-size="9" font-family="'DM Sans',sans-serif" font-weight="300">roadmap + GitHub</text>
       </g>
 
-      <!-- ====== SEPARATOR ====== -->
-      <line x1="40" y1="370" x2="1020" y2="370" stroke="#d1d5db" stroke-width="1" stroke-dasharray="6,4"/>
+      <!-- Fix edge: /dev-roadmap -> /create-issues (short connector) -->
+      <line x1="1020" y1="346" x2="1032" y2="346" stroke="#5eead4" stroke-width="1.5" opacity="0.8"/>
 
-      <!-- ====== UTILITY SECTION TITLE ====== -->
-      <text x="530" y="400" text-anchor="middle" fill="#6b7280" font-size="13" font-weight="600" font-family="sans-serif">Independent Utilities (어느 시점에든 실행 가능)</text>
+      <!-- ====== DIVIDER ====== -->
+      <line x1="80" y1="440" x2="1120" y2="440" stroke="url(#dividerGrad)" stroke-width="1"/>
+      <text x="600" y="472" text-anchor="middle" fill="#4a4a58" font-size="11" font-family="'DM Sans',sans-serif" font-weight="500" letter-spacing="0.1em">INDEPENDENT UTILITIES</text>
     </svg>
   </div>
 
   <!-- Utility chips -->
-  <div style="margin-top:16px;">
+  <div class="utilities">
     <div class="chips">
       <div class="chip"><strong>/product-blueprint</strong><span class="desc">SSOT 통합 마스터</span></div>
       <div class="chip"><strong>/sync-roadmap</strong><span class="desc">이슈 상태 동기화</span></div>
@@ -372,30 +298,6 @@
       <div class="chip"><strong>/resume</strong><span class="desc">세션 복구</span></div>
       <div class="chip"><strong>/sync</strong><span class="desc">Git 동기화</span></div>
       <div class="chip"><strong>/ideation</strong><span class="desc">아이디어 발굴</span></div>
-    </div>
-  </div>
-
-  <!-- Legend -->
-  <div class="legend">
-    <div class="legend-item">
-      <div class="legend-swatch" style="background:#fefce8;border-color:#f59e0b;border-style:dashed;"></div>
-      선택적 스킬
-    </div>
-    <div class="legend-item">
-      <div class="legend-swatch" style="background:#e8f0fe;border-color:#4285f4;"></div>
-      메인 파이프라인
-    </div>
-    <div class="legend-item">
-      <div class="legend-swatch" style="background:#f3e8ff;border-color:#9b59b6;"></div>
-      디자인 브랜치
-    </div>
-    <div class="legend-item">
-      <div class="legend-swatch" style="background:#e6fbf5;border-color:#14b8a6;"></div>
-      개발 브랜치
-    </div>
-    <div class="legend-item">
-      <div class="legend-swatch" style="background:#ecfdf5;border-color:#a7f3d0;"></div>
-      유틸리티
     </div>
   </div>
 </div>
