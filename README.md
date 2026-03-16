@@ -47,6 +47,13 @@
 | `/dev-roadmap` | `deploy-roadmap.md` + 타임라인 HTML | M0~M3 마일스톤, claude-task/human-task 분류 |
 | `/create-issues` | GitHub Issues | 에픽 + 하위 작업 자동 생성 |
 
+### 세션 관리 스킬 (중간중간 사용)
+
+| 스킬 | 설명 |
+|------|------|
+| `/handoff` | 세션 종료 시 핸드오프 문서 생성 (10개 필수 섹션 + 커밋) |
+| `/resume` | 새 세션 시작 시 프로젝트 상태 파악 + 이어하기 |
+
 ### 유틸리티 스킬
 
 | 스킬 | 설명 |
@@ -54,8 +61,6 @@
 | `/init-project` | 새 프로젝트 부트스트랩 |
 | `/product-blueprint` | SSOT 통합 마스터 HTML (각 스킬 완료 시 자동 업데이트) |
 | `/sync-roadmap` | GitHub Issues 상태 기반 로드맵 최신화 |
-| `/handoff` | 세션 핸드오프 문서 생성 |
-| `/resume` | 프로젝트 상태 파악 + 이어하기 |
 | `/sync` | Git pull + 충돌 해결 |
 | `/ideation` | 8개 에이전트로 앱 아이디어 발굴 |
 
