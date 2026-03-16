@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사이드 프로젝트 스킬 파이프라인</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #f0f4f8;
+    color: #1a202c;
+    min-height: 100vh;
+    padding: 40px 20px 60px;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: -0.5px;
+  }
+
+  header p {
+    margin-top: 8px;
+    font-size: 15px;
+    color: #64748b;
+  }
+
+  /* ── Pipeline rows ── */
+  .pipeline-section {
+    margin-bottom: 20px;
+  }
+
+  .pipeline-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #94a3b8;
+    margin-bottom: 16px;
+    padding-left: 4px;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: nowrap;
+  }
+
+  /* ── Card ── */
+  .card {
+    position: relative;
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px 22px 18px;
+    width: 210px;
+    min-height: 130px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    border: 1.5px solid transparent;
+    transition: transform 0.18s, box-shadow 0.18s;
+    flex-shrink: 0;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+
+  .card .skill-name {
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    margin-bottom: 6px;
+  }
+
+  .card .description {
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.45;
+    margin-bottom: 10px;
+  }
+
+  .card .output {
+    font-size: 11px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    color: #94a3b8;
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 5px 8px;
+    line-height: 1.4;
+    word-break: break-all;
+  }
+
+  .card .badge {
+    position: absolute;
+    top: -9px;
+    right: 14px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── Color schemes ── */
+
+  /* Optional (gray) */
+  .card.optional {
+    border-color: #cbd5e1;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  }
+  .card.optional .skill-name { color: #64748b; }
+  .card.optional .badge { background: #e2e8f0; color: #64748b; }
+
+  /* Blue tones for pipeline */
+  .card.blue-1 { border-color: #93c5fd; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); }
+  .card.blue-1 .skill-name { color: #1d4ed8; }
+
+  .card.blue-2 { border-color: #7dd3fc; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); }
+  .card.blue-2 .skill-name { color: #0369a1; }
+
+  .card.blue-3 { border-color: #6ee7b7; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); }
+  .card.blue-3 .skill-name { color: #047857; }
+
+  .card.blue-4 { border-color: #a78bfa; background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); }
+  .card.blue-4 .skill-name { color: #6d28d9; }
+
+  .card.blue-5 { border-color: #f9a8d4; background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); }
+  .card.blue-5 .skill-name { color: #be185d; }
+
+  .card.blue-6 { border-color: #fdba74; background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); }
+  .card.blue-6 .skill-name { color: #c2410c; }
+
+  .card.blue-7 { border-color: #fbbf24; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); }
+  .card.blue-7 .skill-name { color: #b45309; }
+
+  /* Green (utilities) */
+  .card.green { border-color: #86efac; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); }
+  .card.green .skill-name { color: #15803d; }
+  .card.green .badge { background: #bbf7d0; color: #15803d; }
+
+  /* ── Arrows ── */
+  .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .arrow svg {
+    display: block;
+  }
+
+  /* ── Vertical connector between rows ── */
+  .connector-down {
+    display: flex;
+    justify-content: center;
+    padding: 6px 0;
+    /* Offset to align with first card of row 2 */
+  }
+
+  .connector-down svg {
+    display: block;
+  }
+
+  /* ── Utility section ── */
+  .utility-section {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1.5px dashed #cbd5e1;
+  }
+
+  .utility-row {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .utility-row .card {
+    width: 260px;
+  }
+
+  /* ── Finish node ── */
+  .finish-node {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 52px;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    border-radius: 26px;
+    box-shadow: 0 2px 8px rgba(245,158,11,0.3);
+    flex-shrink: 0;
+    letter-spacing: -0.3px;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    border: 1.5px solid;
+    flex-shrink: 0;
+  }
+
+  .legend-dot.l-optional { background: #f1f5f9; border-color: #cbd5e1; }
+  .legend-dot.l-pipeline { background: #dbeafe; border-color: #93c5fd; }
+  .legend-dot.l-utility  { background: #dcfce7; border-color: #86efac; }
+
+  /* ── Responsive ── */
+  @media (max-width: 960px) {
+    .row { flex-wrap: wrap; justify-content: center; gap: 12px; }
+    .arrow { width: 36px; }
+    .arrow svg { width: 28px; }
+    .card { width: 190px; }
+    .connector-down { padding: 12px 0; }
+  }
+
+  @media (max-width: 700px) {
+    .row { flex-direction: column; align-items: center; gap: 0; }
+    .arrow { width: auto; height: 36px; transform: rotate(90deg); }
+    .card { width: 260px; }
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    margin-top: 48px;
+    font-size: 12px;
+    color: #94a3b8;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>사이드 프로젝트 스킬 파이프라인</h1>
+    <p>기획부터 구현까지 — 각 스킬의 실행 순서와 산출물</p>
+  </header>
+
+  <!-- ═══ Row 1: Planning + Design ═══ -->
+  <div class="pipeline-section">
+    <div class="pipeline-label">Planning &amp; Design</div>
+    <div class="row">
+
+      <!-- /interview -->
+      <div class="card optional">
+        <span class="badge">선택</span>
+        <div class="skill-name">/interview</div>
+        <div class="description">사용자 인터뷰를 통해 앱 아이디어 구체화</div>
+        <div class="output">대화 기반 (파일 없음)</div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="arrow">
+        <svg width="40" height="20" viewBox="0 0 40 20" fill="none">
+          <path d="M2 10 H30" stroke="#93c5fd" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M28 4 L36 10 L28 16" stroke="#93c5fd" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+
+      <!-- /app-plan -->
+      <div class="card blue-1">
+        <div class="skill-name">/app-plan</div>
+        <div class="description">기획서(PRD) 작성</div>
+        <div class="output">docs/ssot/*-기획서.md</div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="arrow">
+        <svg width="40" height="20" viewBox="0 0 40 20" fill="none">
+          <path d="M2 10 H30" stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M28 4 L36 10 L28 16" stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+
+      <!-- /design-system-to-figma -->
+      <div class="card blue-2">
+        <div class="skill-name">/design-system-to-figma</div>
+        <div class="description">디자인 토큰 + 시스템 HTML 생성</div>
+        <div class="output">docs/ssot/tokens.css<br>docs/ssot/design-system.html</div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="arrow">
+        <svg width="40" height="20" viewBox="0 0 40 20" fill="none">
+          <path d="M2 10 H30" stroke="#6ee7b7" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M28 4 L36 10 L28 16" stroke="#6ee7b7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+
+      <!-- /prd-to-figma -->
+      <div class="card blue-3">
+        <div class="skill-name">/prd-to-figma</div>
+        <div class="description">화면별 디자인 HTML 생성</div>
+        <div class="output">docs/ssot/screen-*.html</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ Vertical connector ═══ -->
+  <div class="connector-down" style="margin-left: calc(50% - 340px);">
+    <svg width="20" height="44" viewBox="0 0 20 44" fill="none">
+      <path d="M10 2 V34" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M4 32 L10 40 L16 32" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+  </div>
+
+  <!-- ═══ Row 2: Dev + Deploy ═══ -->
+  <div class="pipeline-section">
+    <div class="pipeline-label">Development &amp; Deployment</div>
+    <div class="row" style="justify-content: flex-start; padding-left: calc(50% - 340px);">
+
+      <!-- /dev-plan -->
+      <div class="card blue-4">
+        <div class="skill-name">/dev-plan</div>
+        <div class="description">개발 계획서 작성</div>
+        <div class="output">docs/ssot/dev-plan.md</div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="arrow">
+        <svg width="40" height="20" viewBox="0 0 40 20" fill="none">
+          <path d="M2 10 H30" stroke="#f9a8d4" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M28 4 L36 10 L28 16" stroke="#f9a8d4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+
+      <!-- /dev-roadmap -->
+      <div class="card blue-5">
+        <div class="skill-name">/dev-roadmap</div>
+        <div class="description">배포 로드맵 생성</div>
+        <div class="output">docs/ssot/deploy-roadmap.md</div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="arrow">
+        <svg width="40" height="20" viewBox="0 0 40 20" fill="none">
+          <path d="M2 10 H30" stroke="#fdba74" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M28 4 L36 10 L28 16" stroke="#fdba74" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+
+      <!-- /create-issues -->
+      <div class="card blue-6">
+        <div class="skill-name">/create-issues</div>
+        <div class="description">GitHub Issues 생성</div>
+        <div class="output">GitHub Issues (에픽 + 하위)</div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="arrow">
+        <svg width="40" height="20" viewBox="0 0 40 20" fill="none">
+          <path d="M2 10 H30" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M28 4 L36 10 L28 16" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+
+      <!-- Finish -->
+      <div class="finish-node">구현 시작!</div>
+
+    </div>
+  </div>
+
+  <!-- ═══ Utility Skills ═══ -->
+  <div class="utility-section">
+    <div class="pipeline-label">Utility Skills — 언제든 사용 가능</div>
+    <div class="utility-row">
+
+      <div class="card green">
+        <span class="badge">유틸리티</span>
+        <div class="skill-name">/product-blueprint</div>
+        <div class="description">SSOT 통합 마스터 — 전체 문서를 한 번에 조회하고 일관성 점검</div>
+        <div class="output">docs/ssot/* (통합 조회)</div>
+      </div>
+
+      <div class="card green">
+        <span class="badge">유틸리티</span>
+        <div class="skill-name">/sync-roadmap</div>
+        <div class="description">GitHub 이슈 상태를 로드맵에 자동 동기화</div>
+        <div class="output">docs/ssot/deploy-roadmap.md</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ Legend ═══ -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot l-optional"></div>
+      선택 단계
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot l-pipeline"></div>
+      파이프라인 스킬
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot l-utility"></div>
+      유틸리티 스킬
+    </div>
+  </div>
+
+  <footer>
+    claude-settings &middot; 사이드 프로젝트 워크플로우 파이프라인
+  </footer>
+
+</div>
+</body>
+</html>

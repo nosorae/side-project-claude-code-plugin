@@ -12,40 +12,19 @@
 
 ### 전체 파이프라인
 
-```
-  /interview (선택)    /app-plan          /design-system-to-figma     /prd-to-figma
-  ┌──────────┐       ┌─────────┐        ┌─────────────────┐        ┌──────────────┐
-  │ 요구사항  │─────▶│ 기획서   │──────▶│ 디자인 토큰      │──────▶│ 화면별 디자인  │
-  │ 인터뷰   │       │ (PRD)   │        │ + 디자인 시스템   │        │ (HTML)       │
-  └──────────┘       └─────────┘        └─────────────────┘        └──────────────┘
-                          │                                              │
-                          ▼                                              │
-                     /dev-plan                                           │
-                     ┌──────────────┐                                    │
-                     │ 개발 계획서   │◀──────────────────────────────────┘
-                     │ + 플랫폼 스킬 │
-                     └──────────────┘
-                          │
-                          ▼
-                     /dev-roadmap
-                     ┌──────────────┐
-                     │ 배포 로드맵   │
-                     │ (마일스톤)    │
-                     └──────────────┘
-                          │
-                          ▼
-                     /create-issues
-                     ┌──────────────┐
-                     │ GitHub Issues │
-                     │ 자동 생성     │
-                     └──────────────┘
-                          │
-                          ▼
-                       구현 시작!
-                          │
-                     /sync-roadmap (수시 실행)
-                     /product-blueprint (언제든 실행)
-```
+> **[다이어그램 열기 (HTML)](docs/diagrams/pipeline.html)** — 브라우저에서 시각적 플로우차트 확인
+
+| 순서 | 스킬 | 산출물 | 비고 |
+|:---:|------|--------|------|
+| 0 | `/interview` | `interview-notes.md` | 선택 — 아이디어가 구체적이면 생략 |
+| 1 | `/app-plan` | PRD + 유저플로우 HTML | 에이전트 3인 토론으로 검증 |
+| 2 | `/design-system-to-figma` | `tokens.css` + `design-system.html` | HTML 기본, Figma 선택 |
+| 3 | `/prd-to-figma` | `screen-*.html` | tokens.css 선행 필요 |
+| 4 | `/dev-plan` | `dev-plan.md` + 아키텍처 HTML | 플랫폼 스킬 자동 설치 |
+| 5 | `/dev-roadmap` | `deploy-roadmap.md` + 타임라인 HTML | M0~M3 마일스톤 분류 |
+| 6 | `/create-issues` | GitHub Issues | 에픽 + 하위 작업 자동 생성 |
+| — | `/product-blueprint` | `product-blueprint.html` | 언제든 실행 (SSOT 통합 마스터) |
+| — | `/sync-roadmap` | 로드맵 업데이트 | 구현 중 수시 실행 |
 
 ### 사람과 AI의 역할 분담
 
@@ -62,32 +41,30 @@
 
 ### 작업 흐름 예시
 
-```
-[세션 1] 아이디어가 있는 사람
-├── 사람: "커플 메시지 앱 만들고 싶어"
-├── AI: /app-plan 실행 → 에이전트 3명이 시장성/경쟁/리스크 토론
-├── 사람: 토론 결과 보고 "진행하자" 판단
-├── AI: MVP 범위 설정, 유저 플로우 정의, PRD 작성
-├── AI: /design-system-to-figma → 디자인 토큰 + 컴포넌트 생성
-├── AI: /prd-to-figma → 화면별 디자인 HTML 생성
-├── 사람: 디자인 리뷰 후 수정 요청
-├── AI: /handoff → 세션 정리
-│
-[세션 2] 개발 준비
-├── AI: /resume → 이전 세션 상태 파악
-├── AI: /dev-plan → 기술 아키텍처 설계
-├── 사람: 아키텍처 리뷰, 기술 스택 확인
-├── AI: /dev-roadmap → 마일스톤별 로드맵 생성
-├── 사람: 로드맵 확인
-├── AI: /create-issues → GitHub Issues 자동 생성
-│
-[세션 3~N] 구현
-├── AI: /resume → 상태 파악
-├── 사람: "이슈 #15 해줘" (claude-task)
-├── AI: 이슈 본문 읽고 독립적으로 구현 + 테스트
-├── 사람: human-task 이슈 직접 수행 (Supabase 설정, Apple 인증서 등)
-├── AI: /handoff → 세션 정리
-```
+> **[다이어그램 열기 (HTML)](docs/diagrams/workflow-example.html)** — 브라우저에서 세션별 타임라인 확인
+
+<table>
+<tr><th colspan="3">세션 1 — 기획 + 디자인</th></tr>
+<tr><td>🧑</td><td><b>사람</b></td><td>"커플 메시지 앱 만들고 싶어"</td></tr>
+<tr><td>🤖</td><td><code>/app-plan</code></td><td>에이전트 3명 토론 → MVP 범위 → PRD 작성</td></tr>
+<tr><td>🧑</td><td><b>사람</b></td><td>토론 결과 리뷰, "진행하자" 판단</td></tr>
+<tr><td>🤖</td><td><code>/design-system-to-figma</code></td><td>디자인 토큰 + 컴포넌트 생성</td></tr>
+<tr><td>🤖</td><td><code>/prd-to-figma</code></td><td>화면별 디자인 HTML 생성</td></tr>
+<tr><td>🧑</td><td><b>사람</b></td><td>디자인 리뷰, 수정 요청</td></tr>
+<tr><td>🤖</td><td><code>/handoff</code></td><td>세션 정리</td></tr>
+<tr><th colspan="3">세션 2 — 개발 준비</th></tr>
+<tr><td>🤖</td><td><code>/resume</code></td><td>이전 세션 상태 파악</td></tr>
+<tr><td>🤖</td><td><code>/dev-plan</code></td><td>기술 아키텍처 설계 + 플랫폼 스킬 설치</td></tr>
+<tr><td>🧑</td><td><b>사람</b></td><td>아키텍처 리뷰</td></tr>
+<tr><td>🤖</td><td><code>/dev-roadmap</code></td><td>마일스톤별 로드맵 생성</td></tr>
+<tr><td>🤖</td><td><code>/create-issues</code></td><td>GitHub Issues 자동 생성</td></tr>
+<tr><th colspan="3">세션 3~N — 구현</th></tr>
+<tr><td>🤖</td><td><code>/resume</code></td><td>상태 파악, 우선순위 작업 제안</td></tr>
+<tr><td>🧑</td><td><b>사람</b></td><td>"이슈 #15 해줘" (claude-task)</td></tr>
+<tr><td>🤖</td><td><b>AI</b></td><td>이슈 본문 읽고 독립 구현 + 테스트</td></tr>
+<tr><td>🧑</td><td><b>사람</b></td><td>human-task 수행 (Supabase 설정 등)</td></tr>
+<tr><td>🤖</td><td><code>/handoff</code></td><td>세션 정리</td></tr>
+</table>
 
 ---
 
@@ -213,16 +190,24 @@ claude plugin install --plugin-dir ~/side-project-claude-settings
 
 ## 스킬 의존성
 
-```
-[interview] ──▶ app-plan ─────┬──▶ design-system-to-figma ──▶ prd-to-figma
- (선택)                       │        (tokens.css 필요)
-                              │
-                              └──▶ dev-plan ──▶ dev-roadmap ──▶ create-issues
-                                  (PRD 필요)    (dev-plan 필요) (roadmap + GitHub 필요)
+> **[다이어그램 열기 (HTML)](docs/diagrams/dependencies.html)** — 브라우저에서 의존성 그래프 확인
 
-product-blueprint ← 파이프라인 어느 시점에서든 실행 가능 (SSOT 통합 마스터)
-sync-roadmap ← 구현 단계에서 수시 실행 (이슈 상태 → 로드맵 동기화)
-```
+<table>
+<tr>
+<th>스킬</th>
+<th>선행 조건</th>
+<th>분기</th>
+</tr>
+<tr><td><code>/interview</code></td><td>없음 (선택)</td><td rowspan="4">기획 + 디자인</td></tr>
+<tr><td><code>/app-plan</code></td><td>아이디어</td></tr>
+<tr><td><code>/design-system-to-figma</code></td><td>PRD</td></tr>
+<tr><td><code>/prd-to-figma</code></td><td><code>tokens.css</code></td></tr>
+<tr><td><code>/dev-plan</code></td><td>PRD</td><td rowspan="3">개발 + 배포</td></tr>
+<tr><td><code>/dev-roadmap</code></td><td><code>dev-plan.md</code></td></tr>
+<tr><td><code>/create-issues</code></td><td><code>deploy-roadmap.md</code> + GitHub</td></tr>
+<tr><td><code>/product-blueprint</code></td><td>SSOT 문서 1개 이상</td><td rowspan="2">유틸리티 (언제든)</td></tr>
+<tr><td><code>/sync-roadmap</code></td><td><code>deploy-roadmap.md</code> + GitHub</td></tr>
+</table>
 
 - `/interview`는 선택사항 — 아이디어가 구체적이면 바로 `/app-plan` 시작
 - `design-system-to-figma`과 `prd-to-figma`는 HTML 생성이 기본, Figma 내보내기는 선택
