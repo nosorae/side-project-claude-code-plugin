@@ -1,6 +1,10 @@
 ---
 name: prd-to-figma
-description: "Use when the user wants to convert PRD screen definitions into screen HTML files. HTML 생성이 기본이며, Figma 내보내기는 사용자가 요청한 경우에만 수행. Triggered by requests like 'PRD 화면 만들어줘', 'PRD에서 화면 생성', '/prd-to-figma'."
+description: |
+  PRD 화면 정의를 화면별 디자인 HTML 파일로 변환하는 스킬. tokens.css가 선행 필요하다.
+  이 스킬은 다음과 같은 요청에 반드시 사용한다: "화면 디자인 만들어줘", "PRD 화면 생성", "screen HTML 만들어줘", "화면별 디자인", "/prd-to-figma", "PRD에서 화면 변환".
+  디자인 시스템이 완성된 후 개별 화면을 만들어야 하는 맥락이면 이 스킬을 사용한다. HTML 생성이 기본이며, Figma 내보내기는 사용자 요청 시에만 수행.
+user_invocable: true
 ---
 
 # PRD to Figma
