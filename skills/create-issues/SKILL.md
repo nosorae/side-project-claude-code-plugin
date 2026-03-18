@@ -1,5 +1,10 @@
 ---
-description: 배포 로드맵을 기반으로 GitHub Issues를 자동 생성하는 스킬. 에픽 이슈 + 하위 작업 이슈 구조, claude-task/human-task 라벨 자동 부여
+name: create-issues
+description: |
+  배포 로드맵을 기반으로 GitHub Issues를 자동 생성하는 스킬. 에픽 이슈 + 하위 작업 이슈 구조, claude-task/human-task 라벨 자동 부여.
+  이 스킬은 다음과 같은 요청에 반드시 사용한다: "이슈 만들어줘", "GitHub 이슈 생성", "작업 분배", "태스크 생성", "/create-issues", "에픽 이슈 만들어줘".
+  로드맵이 완성되어 구현 작업을 이슈로 분해해야 하는 맥락이면 이 스킬을 사용한다.
+user_invocable: true
 ---
 
 # Create Issues (GitHub Issues 생성)
