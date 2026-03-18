@@ -12,12 +12,6 @@
 
 ---
 
-## 전체 파이프라인
-
-<img src="docs/diagrams/pipeline.png" alt="스킬 파이프라인" width="100%">
-
----
-
 ## 사람과 AI의 역할 분담
 
 <img src="docs/diagrams/workflow-example.png" alt="작업 흐름 예시" width="100%">
