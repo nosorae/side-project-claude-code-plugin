@@ -1,5 +1,9 @@
 ---
-description: Issue/PR 기준으로 로드맵 문서를 최신화하는 스킬. GitHub Issues 상태를 조회하여 deploy-roadmap.md에 진행 상황을 반영
+name: sync-roadmap
+description: |
+  Issue/PR 기준으로 로드맵 문서를 최신화하는 스킬. GitHub Issues 상태를 조회하여 deploy-roadmap.md에 진행 상황을 반영한다.
+  이 스킬은 다음과 같은 요청에 반드시 사용한다: "로드맵 업데이트", "진행 상황 반영", "로드맵 동기화", "/sync-roadmap", "이슈 상태 반영".
+  구현 단계에서 로드맵 문서를 최신 상태로 유지해야 하는 맥락이면 이 스킬을 사용한다.
 user_invocable: true
 ---
 
