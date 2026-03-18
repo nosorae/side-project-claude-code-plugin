@@ -46,6 +46,13 @@ gh repo create {프로젝트이름} --{공개여부} --description "{설명}" --
 기존 디렉토리에 이미 git이 있으면 초기화를 건너뛴다.
 기존 GitHub 레포가 있으면 생성을 건너뛴다.
 
+```bash
+# develop 브랜치 생성
+git checkout -b develop
+git push -u origin develop
+git checkout main
+```
+
 ### Step 3: 설정 템플릿 복사
 
 **Actions:**
@@ -62,7 +69,7 @@ cp "$SOURCE/rules/"*.md {프로젝트경로}/.claude/rules/
 
 # 스킬 복사 (init-project, sync 제외 — 템플릿 전용 스킬)
 mkdir -p {프로젝트경로}/.claude/skills
-for skill in app-plan design-system-to-figma prd-to-figma dev-plan dev-roadmap create-issues handoff; do
+for skill in app-plan design-system-to-figma prd-to-figma dev-plan dev-roadmap create-issues handoff resume product-blueprint interview ideation sync-roadmap clarify; do
   cp -r "$SOURCE/skills/$skill" {프로젝트경로}/.claude/skills/
 done
 
@@ -135,7 +142,8 @@ gh label create "human-task" --description "사람이 직접 수행해야 하는
 git add -A
 git commit -m "Init: 프로젝트 초기 설정
 
-- 규칙 5개 + 스킬 7개 + hooks 복사
+- 규칙 7개 + 스킬 13개 + hooks 복사
+- develop 브랜치 생성
 - docs/ 디렉토리 구조 생성 (ssot/prd, ssot/design, ssot/dev, refs, handoff, lessons, sessions)
 - 초기 product-blueprint.html 생성 (5개 탭 placeholder)
 - GitHub 라벨 생성 (epic, claude-task, human-task)"
@@ -266,9 +274,10 @@ gh issue create --title "[Epic] 개발 이슈 생성" \
 GitHub: https://github.com/{사용자}/{프로젝트이름}
 
 포함된 항목:
-- 규칙 5개 (ssot, workflow, history, github-issues, meta)
-- 스킬 7개 (app-plan, design-system-to-figma, prd-to-figma, dev-plan, dev-roadmap, create-issues, handoff)
+- 규칙 7개 (ssot, workflow, history, github-issues, meta, source-citation, git-flow)
+- 스킬 13개 (app-plan, design-system-to-figma, prd-to-figma, dev-plan, dev-roadmap, create-issues, handoff, resume, product-blueprint, interview, ideation, sync-roadmap, clarify)
 - hooks (log-conversation: 대화 기록 자동 로깅)
+- Git Flow (main + develop 브랜치)
 - docs/ 디렉토리 구조 (ssot/prd, ssot/design, ssot/dev, refs/, handoff/, lessons/, sessions/)
 - 초기 product-blueprint.html (5개 탭 placeholder)
 - GitHub 라벨 (epic, claude-task, human-task)
