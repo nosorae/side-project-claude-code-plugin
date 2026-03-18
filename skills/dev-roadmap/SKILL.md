@@ -1,5 +1,10 @@
 ---
-description: 개발 계획서를 기반으로 마일스톤별 배포 로드맵을 생성하는 스킬. 에픽 분류, claude-task/human-task 구분, 의존성 순서를 정의
+name: dev-roadmap
+description: |
+  개발 계획서를 기반으로 마일스톤별 배포 로드맵을 생성하는 스킬. 에픽 분류, claude-task/human-task 구분, 의존성 순서를 정의한다.
+  이 스킬은 다음과 같은 요청에 반드시 사용한다: "로드맵 만들어줘", "배포 계획", "마일스톤 정리", "개발 일정", "릴리스 계획", "/dev-roadmap".
+  개발 계획이나 일정, 마일스톤 관련 맥락이면 이 스킬을 사용한다.
+user_invocable: true
 ---
 
 # Dev Roadmap (배포 로드맵 생성)
