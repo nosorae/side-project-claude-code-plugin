@@ -27,12 +27,6 @@
 
 ---
 
-## 스킬 의존성
-
-<img src="docs/diagrams/dependencies.png" alt="스킬 의존성 그래프" width="100%">
-
----
-
 ## 스킬 목록
 
 ### 파이프라인 스킬
