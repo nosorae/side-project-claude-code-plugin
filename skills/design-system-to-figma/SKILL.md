@@ -1,6 +1,10 @@
 ---
 name: design-system-to-figma
-description: "Use when the user wants to generate a mobile design system from a PRD or spec markdown file. HTML 생성이 기본이며, Figma 내보내기는 사용자가 요청한 경우에만 수행. Triggered by requests like 'PRD로 디자인 시스템 만들어줘', '디자인 시스템 생성', '/design-system-to-figma'."
+description: |
+  PRD나 스펙 문서를 기반으로 모바일 디자인 시스템을 생성하는 스킬. 디자인 토큰(tokens.css)과 컴포넌트 시스템 HTML을 만든다.
+  이 스킬은 다음과 같은 요청에 반드시 사용한다: "디자인 시스템 만들어줘", "디자인 토큰 생성", "컴포넌트 시스템", "PRD로 디자인", "/design-system-to-figma", "tokens.css 만들어줘".
+  기획서가 완성된 후 디자인 단계에 진입하는 맥락이면 이 스킬을 사용한다. HTML 생성이 기본이며, Figma 내보내기는 사용자 요청 시에만 수행.
+user_invocable: true
 ---
 
 # Figma Design System

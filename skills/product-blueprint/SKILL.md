@@ -1,5 +1,9 @@
 ---
-description: PRD, 디자인, 개발 계획 등 SSOT 문서를 하나의 인터랙티브 HTML로 통합하는 마스터 문서 생성 스킬
+name: product-blueprint
+description: |
+  PRD, 디자인, 개발 계획 등 SSOT 문서를 하나의 인터랙티브 HTML로 통합하는 마스터 문서 생성 스킬.
+  이 스킬은 다음과 같은 요청에 반드시 사용한다: "블루프린트 만들어줘", "마스터 문서 생성", "SSOT 통합", "전체 문서 한눈에", "/product-blueprint", "프로젝트 현황 정리".
+  프로젝트의 기획/디자인/개발 문서를 통합 조회하고 싶은 맥락이면 이 스킬을 사용한다.
 user_invocable: true
 ---
 
