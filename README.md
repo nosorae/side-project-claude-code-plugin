@@ -10,7 +10,7 @@
 > /init-project
 ```
 
-프로젝트 이름, 공개 여부, 설명만 입력하면 Git 초기화, GitHub 레포 생성, 규칙/스킬 복사, develop 브랜치 생성, 라벨 생성까지 자동 완료.
+프로젝트 이름, 공개 여부, 설명만 입력하면 Git 초기화, GitHub 레포 생성, 규칙/스킬 복사, develop 브랜치 생성, 라벨 생성까지 자동 완료. 대화 자동 기록 훅(`hooks/log-conversation.sh`)도 함께 설치되어 모든 대화가 `docs/sessions/`에 자동 저장됩니다.
 
 ---
 
