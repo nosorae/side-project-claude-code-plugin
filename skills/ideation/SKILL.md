@@ -1,6 +1,10 @@
 ---
 name: ideation
-description: Use when user wants to discover profitable app ideas, find side project opportunities, or explore new business directions. Triggers on "아이데이션", "아이디어 찾아줘", "뭐 만들지", "/ideation"
+description: |
+  수익성 있는 앱 아이디어를 발굴하는 스킬. 8개 에이전트가 병렬로 시장 기회를 탐색한다.
+  이 스킬은 다음과 같은 요청에 반드시 사용한다: "아이데이션", "아이디어 찾아줘", "뭐 만들지", "사이드 프로젝트 아이디어", "앱 아이디어 추천", "/ideation", "시장 기회 탐색".
+  새로운 프로젝트 아이디어를 찾거나 사업 방향을 탐색하는 맥락이면 이 스킬을 사용한다.
+user_invocable: true
 ---
 
 # Ideation (앱 아이디어 발굴) v2
