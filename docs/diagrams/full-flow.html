@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>init-project → 첫 배포 전체 흐름</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg-card: rgba(30,30,45,0.95);
+    --border-card: rgba(255,255,255,0.15);
+    --text: #e8e6f0;
+    --text-dim: rgba(255,255,255,0.6);
+    --text-muted: rgba(255,255,255,0.45);
+    --amber: #f59e0b;
+    --purple: #8b5cf6;
+    --teal: #14b8a6;
+    --emerald: #10b981;
+    --blue: #3b82f6;
+    --rose: #f43f5e;
+    --gray-accent: #6b7280;
+    --font-serif: 'DM Serif Display', Georgia, serif;
+    --font-sans: 'DM Sans', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+    width: 1200px;
+    height: fit-content;
+    overflow: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .scene {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: 48px 56px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  header {
+    margin-bottom: 40px;
+  }
+
+  header h1 {
+    font-family: var(--font-serif);
+    font-size: 32px;
+    font-weight: 400;
+    color: #fff;
+    letter-spacing: -0.3px;
+    line-height: 1.1;
+  }
+
+  header p {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Phase label ── */
+  .phase {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    margin-top: 8px;
+  }
+
+  .phase-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .phase-text {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--text-muted);
+  }
+
+  /* ── Row ── */
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* ── Card ── */
+  .card {
+    position: relative;
+    min-height: 100px;
+    padding: 18px 18px 14px;
+    border-radius: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .card.w-lg { width: 220px; }
+  .card.w-md { width: 180px; }
+  .card.w-sm { width: 160px; }
+
+  .card .skill-name {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .card .description {
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-top: 10px;
+  }
+
+  .card .output {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .card .badge {
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    font-size: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  /* ── Color variants ── */
+  .card.c-blue .skill-name { color: var(--blue); }
+  .card.c-blue { border-color: rgba(59,130,246,0.35); box-shadow: 0 0 20px rgba(59,130,246,0.08); }
+
+  .card.c-amber .skill-name { color: var(--amber); }
+  .card.c-amber { border-color: rgba(245,158,11,0.35); box-shadow: 0 0 20px rgba(245,158,11,0.08); }
+
+  .card.c-purple .skill-name { color: var(--purple); }
+  .card.c-purple { border-color: rgba(139,92,246,0.35); box-shadow: 0 0 20px rgba(139,92,246,0.08); }
+
+  .card.c-teal .skill-name { color: var(--teal); }
+  .card.c-teal { border-color: rgba(20,184,166,0.35); box-shadow: 0 0 20px rgba(20,184,166,0.08); }
+
+  .card.c-emerald .skill-name { color: var(--emerald); }
+  .card.c-emerald { border-color: rgba(16,185,129,0.35); box-shadow: 0 0 20px rgba(16,185,129,0.08); }
+
+  .card.c-rose .skill-name { color: var(--rose); }
+  .card.c-rose { border-color: rgba(244,63,94,0.35); box-shadow: 0 0 20px rgba(244,63,94,0.08); }
+
+  .card.c-optional { border-color: rgba(107,114,128,0.4); }
+  .card.c-optional .skill-name { color: var(--gray-accent); }
+  .card.c-optional .badge { background: rgba(107,114,128,0.2); color: var(--gray-accent); }
+
+  .card.c-utility { border-color: rgba(255,255,255,0.12); }
+  .card.c-utility .skill-name { color: rgba(255,255,255,0.55); }
+
+  /* ── Connectors ── */
+  .connector {
+    flex-shrink: 0;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .connector .arrow {
+    width: 100%;
+    height: 2px;
+    position: relative;
+  }
+
+  .connector .arrow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    height: 2px;
+    border-radius: 1px;
+  }
+
+  .connector .arrow::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: -3px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+  }
+
+  .connector.l-blue .arrow::before { background: rgba(59,130,246,0.5); }
+  .connector.l-blue .arrow::after { border-left-color: rgba(59,130,246,0.5); }
+
+  .connector.l-amber .arrow::before { background: rgba(245,158,11,0.5); }
+  .connector.l-amber .arrow::after { border-left-color: rgba(245,158,11,0.5); }
+
+  .connector.l-purple .arrow::before { background: rgba(139,92,246,0.5); }
+  .connector.l-purple .arrow::after { border-left-color: rgba(139,92,246,0.5); }
+
+  .connector.l-teal .arrow::before { background: rgba(20,184,166,0.5); }
+  .connector.l-teal .arrow::after { border-left-color: rgba(20,184,166,0.5); }
+
+  .connector.l-emerald .arrow::before { background: rgba(16,185,129,0.5); }
+  .connector.l-emerald .arrow::after { border-left-color: rgba(16,185,129,0.5); }
+
+  .connector.l-gray .arrow::before { background: rgba(107,114,128,0.4); }
+  .connector.l-gray .arrow::after { border-left-color: rgba(107,114,128,0.4); }
+
+  .connector.l-rose .arrow::before { background: rgba(244,63,94,0.5); }
+  .connector.l-rose .arrow::after { border-left-color: rgba(244,63,94,0.5); }
+
+  /* ── Vertical spacer with down arrow ── */
+  .v-spacer {
+    height: 28px;
+    display: flex;
+    align-items: center;
+    padding-left: 100px;
+  }
+
+  .v-spacer .v-arrow {
+    width: 2px;
+    height: 100%;
+    position: relative;
+  }
+
+  .v-spacer .v-arrow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 100%;
+    border-radius: 1px;
+  }
+
+  .v-spacer .v-arrow::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: -3px;
+    width: 0;
+    height: 0;
+    border-top: 6px solid;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+  }
+
+  .v-spacer.vl-amber .v-arrow::before { background: rgba(245,158,11,0.4); }
+  .v-spacer.vl-amber .v-arrow::after { border-top-color: rgba(245,158,11,0.4); }
+
+  .v-spacer.vl-teal .v-arrow::before { background: rgba(20,184,166,0.4); }
+  .v-spacer.vl-teal .v-arrow::after { border-top-color: rgba(20,184,166,0.4); }
+
+  .v-spacer.vl-emerald .v-arrow::before { background: rgba(16,185,129,0.4); }
+  .v-spacer.vl-emerald .v-arrow::after { border-top-color: rgba(16,185,129,0.4); }
+
+  .v-spacer.vl-rose .v-arrow::before { background: rgba(244,63,94,0.4); }
+  .v-spacer.vl-rose .v-arrow::after { border-top-color: rgba(244,63,94,0.4); }
+
+  /* ── Side tools section ── */
+  .side-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .side-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .side-row .card {
+    min-height: 70px;
+    width: 170px;
+  }
+
+  /* ── Finish node ── */
+  .finish-node {
+    flex-shrink: 0;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 22px;
+    font-family: var(--font-serif);
+    font-size: 15px;
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  .finish-node.f-rose {
+    background: linear-gradient(135deg, var(--rose), #e11d48);
+    box-shadow: 0 0 24px rgba(244,63,94,0.2);
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    gap: 20px;
+    justify-content: flex-end;
+    margin-top: 28px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 300;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    opacity: 0.6;
+  }
+
+  .legend-dot.d-blue { background: var(--blue); }
+  .legend-dot.d-amber { background: var(--amber); }
+  .legend-dot.d-purple { background: var(--purple); }
+  .legend-dot.d-teal { background: var(--teal); }
+  .legend-dot.d-emerald { background: var(--emerald); }
+  .legend-dot.d-rose { background: var(--rose); }
+  .legend-dot.d-gray { background: var(--gray-accent); opacity: 0.4; }
+
+  footer {
+    margin-top: 20px;
+    font-size: 10px;
+    font-weight: 300;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* ── Role tags ── */
+  .role-tag {
+    display: inline-block;
+    font-size: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-top: 6px;
+  }
+
+  .role-tag.human { background: rgba(244,63,94,0.15); color: var(--rose); }
+  .role-tag.ai { background: rgba(59,130,246,0.15); color: var(--blue); }
+  .role-tag.both { background: rgba(139,92,246,0.15); color: var(--purple); }
+</style>
+</head>
+<body>
+<div class="scene">
+
+  <header>
+    <h1>From init-project to First Deploy</h1>
+    <p>Complete side project workflow &mdash; /init-project 부터 첫 배포까지</p>
+  </header>
+
+  <!-- ═══ Phase 1: Setup ═══ -->
+  <div class="phase">
+    <div class="phase-num" style="background:rgba(59,130,246,0.2);color:var(--blue);">1</div>
+    <div class="phase-text">Setup</div>
+  </div>
+  <div class="flow-row">
+    <div class="card c-blue w-lg">
+      <div class="skill-name">/init-project</div>
+      <div class="description">Git + GitHub 초기화<br>규칙 7개 + 스킬 13개 복사<br>develop 브랜치 + 라벨 생성</div>
+      <span class="role-tag human">사람이 실행</span>
+    </div>
+  </div>
+
+  <!-- ═══ V connector ═══ -->
+  <div class="v-spacer vl-amber"><div class="v-arrow"></div></div>
+
+  <!-- ═══ Phase 2: Planning ═══ -->
+  <div class="phase">
+    <div class="phase-num" style="background:rgba(245,158,11,0.2);color:var(--amber);">2</div>
+    <div class="phase-text">Planning</div>
+  </div>
+  <div class="flow-row">
+    <div class="card c-optional w-md">
+      <span class="badge">선택</span>
+      <div class="skill-name">/interview</div>
+      <div class="description">아이디어 모호 시<br>인터뷰로 구체화</div>
+      <div class="output">interview-notes.md</div>
+    </div>
+
+    <div class="connector l-gray"><div class="arrow"></div></div>
+
+    <div class="card c-amber w-lg">
+      <div class="skill-name">/app-plan</div>
+      <div class="description">3인 에이전트 토론<br>경쟁 리서치 (Tier별 플랫폼)<br>MVP 범위 + 유저 플로우</div>
+      <div class="output">PRD + userflow.html + screen-map.html</div>
+    </div>
+  </div>
+
+  <!-- ═══ V connector ═══ -->
+  <div class="v-spacer vl-amber" style="padding-left:244px;"><div class="v-arrow"></div></div>
+
+  <!-- ═══ Phase 3: Design ═══ -->
+  <div class="phase">
+    <div class="phase-num" style="background:rgba(139,92,246,0.2);color:var(--purple);">3</div>
+    <div class="phase-text">Design</div>
+  </div>
+  <div class="flow-row">
+    <div class="card c-purple w-lg">
+      <div class="skill-name">/design-system-to-figma</div>
+      <div class="description">디자인 토큰 생성<br>컴포넌트 시스템</div>
+      <div class="output">tokens.css + design-system.html</div>
+    </div>
+
+    <div class="connector l-purple"><div class="arrow"></div></div>
+
+    <div class="card c-purple w-lg">
+      <div class="skill-name">/prd-to-figma</div>
+      <div class="description">화면별 디자인 HTML<br>tokens.css 선행 필요</div>
+      <div class="output">screen-*.html</div>
+    </div>
+  </div>
+
+  <!-- ═══ V connector ═══ -->
+  <div class="v-spacer vl-teal"><div class="v-arrow"></div></div>
+
+  <!-- ═══ Phase 4: Dev Planning ═══ -->
+  <div class="phase">
+    <div class="phase-num" style="background:rgba(20,184,166,0.2);color:var(--teal);">4</div>
+    <div class="phase-text">Dev Planning</div>
+  </div>
+  <div class="flow-row">
+    <div class="card c-teal w-lg">
+      <div class="skill-name">/dev-plan</div>
+      <div class="description">기술 아키텍처<br>디렉토리 + 데이터 모델</div>
+      <div class="output">dev-plan.md + architecture.html</div>
+    </div>
+
+    <div class="connector l-teal"><div class="arrow"></div></div>
+
+    <div class="card c-teal w-md">
+      <div class="skill-name">/dev-roadmap</div>
+      <div class="description">M0~M3 마일스톤<br>task 분류</div>
+      <div class="output">deploy-roadmap.md</div>
+    </div>
+
+    <div class="connector l-emerald"><div class="arrow"></div></div>
+
+    <div class="card c-emerald w-md">
+      <div class="skill-name">/create-issues</div>
+      <div class="description">에픽 + 하위 작업<br>GitHub Issues 생성</div>
+      <div class="output">GitHub Issues</div>
+    </div>
+  </div>
+
+  <!-- ═══ V connector ═══ -->
+  <div class="v-spacer vl-rose"><div class="v-arrow"></div></div>
+
+  <!-- ═══ Phase 5: Implementation ═══ -->
+  <div class="phase">
+    <div class="phase-num" style="background:rgba(244,63,94,0.2);color:var(--rose);">5</div>
+    <div class="phase-text">Implementation</div>
+  </div>
+  <div class="flow-row">
+    <div class="card c-rose w-lg" style="min-height:110px;">
+      <div class="skill-name">feature/ 브랜치에서 구현</div>
+      <div class="description">
+        <span class="role-tag ai">claude-task</span> AI가 독립 수행<br>
+        <span class="role-tag human">human-task</span> 사람이 수행<br>
+        완료 시 develop에 PR
+      </div>
+    </div>
+
+    <div class="connector l-rose"><div class="arrow"></div></div>
+
+    <div class="card c-rose w-md" style="min-height:110px;">
+      <div class="skill-name">develop → main</div>
+      <div class="description">릴리스 시점에<br>main으로 PR 병합</div>
+    </div>
+
+    <div class="connector l-rose"><div class="arrow"></div></div>
+
+    <div class="finish-node f-rose">첫 배포!</div>
+  </div>
+
+  <!-- ═══ Side tools ═══ -->
+  <div class="side-section">
+    <div class="phase" style="margin-top:0;">
+      <div class="phase-num" style="background:rgba(255,255,255,0.08);color:var(--text-muted);">⚡</div>
+      <div class="phase-text">구현 중 수시로 사용하는 스킬</div>
+    </div>
+    <div class="side-row">
+      <div class="card c-utility w-md" style="min-height:60px;">
+        <div class="skill-name">/handoff</div>
+        <div class="description">세션 종료 시 핸드오프</div>
+      </div>
+      <div class="card c-utility w-md" style="min-height:60px;">
+        <div class="skill-name">/resume</div>
+        <div class="description">새 세션에서 이어하기</div>
+      </div>
+      <div class="card c-utility w-md" style="min-height:60px;">
+        <div class="skill-name">/sync-roadmap</div>
+        <div class="description">로드맵 진행률 동기화</div>
+      </div>
+      <div class="card c-utility w-md" style="min-height:60px;">
+        <div class="skill-name">/clarify</div>
+        <div class="description">모호한 이슈 구체화</div>
+      </div>
+      <div class="card c-utility w-md" style="min-height:60px;">
+        <div class="skill-name">/product-blueprint</div>
+        <div class="description">SSOT 통합 마스터</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Legend ═══ -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot d-blue"></div>셋업</div>
+    <div class="legend-item"><div class="legend-dot d-amber"></div>기획</div>
+    <div class="legend-item"><div class="legend-dot d-purple"></div>디자인</div>
+    <div class="legend-item"><div class="legend-dot d-teal"></div>개발 계획</div>
+    <div class="legend-item"><div class="legend-dot d-emerald"></div>이슈 생성</div>
+    <div class="legend-item"><div class="legend-dot d-rose"></div>구현 + 배포</div>
+    <div class="legend-item"><div class="legend-dot d-gray"></div>선택/유틸</div>
+  </div>
+
+  <footer>claude-settings &middot; from init-project to first deploy</footer>
+
+</div>
+</body>
+</html>
