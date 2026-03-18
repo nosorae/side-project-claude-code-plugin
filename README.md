@@ -8,41 +8,7 @@
 
 ## init-project부터 첫 배포까지
 
-```
-/init-project                    ← 프로젝트 생성 (Git, GitHub, 규칙/스킬 복사, develop 브랜치)
-    │
-    ▼
-/interview (선택)                ← 아이디어가 모호하면 인터뷰로 구체화
-    │
-    ▼
-/app-plan                        ← 3인 에이전트 토론 → MVP 범위 → 유저 플로우 → PRD
-    │
-    ├─▶ /design-system-to-figma  ← 디자인 토큰(tokens.css) + 컴포넌트 시스템
-    │       │
-    │       ▼
-    │   /prd-to-figma            ← 화면별 디자인 HTML (tokens.css 필요)
-    │
-    ▼
-/dev-plan                        ← 기술 아키텍처 + 디렉토리 구조 + 데이터 모델
-    │
-    ▼
-/dev-roadmap                     ← M0~M3 마일스톤, claude-task/human-task 분류
-    │
-    ▼
-/create-issues                   ← GitHub Issues 에픽 + 하위 작업 자동 생성
-    │
-    ▼
-구현 시작                        ← feature/ 브랜치에서 작업, develop에 PR
-    │                               claude-task는 AI가, human-task는 사람이
-    │
-    ├─▶ /sync-roadmap            ← 구현 중 수시로 로드맵 최신화
-    ├─▶ /handoff                 ← 세션 종료 시 핸드오프 문서
-    ├─▶ /resume                  ← 새 세션에서 이어하기
-    ├─▶ /clarify                 ← 모호한 이슈 구체화
-    │
-    ▼
-develop → main PR               ← 릴리스 시점에 main 병합 → 첫 배포
-```
+<img src="docs/diagrams/full-flow.png" alt="init-project부터 첫 배포까지 전체 흐름" width="100%">
 
 ---
 
