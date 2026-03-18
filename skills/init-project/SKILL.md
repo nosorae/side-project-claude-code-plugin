@@ -1,5 +1,9 @@
 ---
-description: 새 사이드 프로젝트를 부트스트랩하는 스킬. 디렉토리 생성, git init, GitHub 레포 생성, 스킬/규칙 복사, 라벨 생성까지 한번에 수행
+name: init-project
+description: |
+  새 사이드 프로젝트를 부트스트랩하는 스킬. Git/GitHub 초기화, 규칙 7개 + 스킬 13개 복사, develop 브랜치 생성, 라벨 생성, product-blueprint 생성까지 한번에 수행한다.
+  이 스킬은 다음과 같은 요청에 반드시 사용한다: "새 프로젝트 시작", "프로젝트 초기화", "사이드 프로젝트 셋업", "/init-project", "프로젝트 만들어줘", "레포 생성해줘".
+  새 프로젝트를 시작하거나 초기 환경을 세팅하는 맥락이면 이 스킬을 사용한다.
 user_invocable: true
 ---
 
