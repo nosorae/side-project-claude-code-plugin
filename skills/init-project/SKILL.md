@@ -1,7 +1,7 @@
 ---
 name: init-project
 description: |
-  새 사이드 프로젝트를 부트스트랩하는 스킬. Git/GitHub 초기화, 규칙 7개 + 스킬 13개 복사, develop 브랜치 생성, 라벨 생성, product-blueprint 생성까지 한번에 수행한다.
+  새 사이드 프로젝트를 부트스트랩하는 스킬. Git/GitHub 초기화, 규칙 7개 + 스킬 14개 복사, develop 브랜치 생성, 라벨 생성, product-blueprint 생성까지 한번에 수행한다.
   이 스킬은 다음과 같은 요청에 반드시 사용한다: "새 프로젝트 시작", "프로젝트 초기화", "사이드 프로젝트 셋업", "/init-project", "프로젝트 만들어줘", "레포 생성해줘".
   새 프로젝트를 시작하거나 초기 환경을 세팅하는 맥락이면 이 스킬을 사용한다.
 user_invocable: true
@@ -71,9 +71,9 @@ SOURCE=~/side-project-claude-settings
 mkdir -p {프로젝트경로}/.claude/rules
 cp "$SOURCE/rules/"*.md {프로젝트경로}/.claude/rules/
 
-# 스킬 복사 (init-project, sync 제외 — 템플릿 전용 스킬)
+# 스킬 복사 (init-project, skill-creator 제외 — 메타 레포 전용 스킬)
 mkdir -p {프로젝트경로}/.claude/skills
-for skill in app-plan design-system-to-figma prd-to-figma dev-plan dev-roadmap create-issues handoff resume product-blueprint interview ideation sync-roadmap clarify; do
+for skill in app-plan design-system-to-figma prd-to-figma dev-plan dev-roadmap create-issues handoff resume product-blueprint interview ideation sync-roadmap clarify sync; do
   cp -r "$SOURCE/skills/$skill" {프로젝트경로}/.claude/skills/
 done
 
@@ -146,7 +146,7 @@ gh label create "human-task" --description "사람이 직접 수행해야 하는
 git add -A
 git commit -m "Init: 프로젝트 초기 설정
 
-- 규칙 7개 + 스킬 13개 + hooks 복사
+- 규칙 7개 + 스킬 14개 + hooks 복사
 - develop 브랜치 생성
 - docs/ 디렉토리 구조 생성 (ssot/prd, ssot/design, ssot/dev, refs, handoff, lessons, sessions)
 - 초기 product-blueprint.html 생성 (5개 탭 placeholder)
@@ -279,7 +279,7 @@ GitHub: https://github.com/{사용자}/{프로젝트이름}
 
 포함된 항목:
 - 규칙 7개 (ssot, workflow, history, github-issues, meta, source-citation, git-flow)
-- 스킬 13개 (app-plan, design-system-to-figma, prd-to-figma, dev-plan, dev-roadmap, create-issues, handoff, resume, product-blueprint, interview, ideation, sync-roadmap, clarify)
+- 스킬 14개 (app-plan, design-system-to-figma, prd-to-figma, dev-plan, dev-roadmap, create-issues, handoff, resume, product-blueprint, interview, ideation, sync-roadmap, clarify, sync)
 - hooks (log-conversation: 대화 기록 자동 로깅)
 - Git Flow (main + develop 브랜치)
 - docs/ 디렉토리 구조 (ssot/prd, ssot/design, ssot/dev, refs/, handoff/, lessons/, sessions/)
