@@ -6,6 +6,46 @@
 
 ---
 
+## init-project부터 첫 배포까지
+
+```
+/init-project                    ← 프로젝트 생성 (Git, GitHub, 규칙/스킬 복사, develop 브랜치)
+    │
+    ▼
+/interview (선택)                ← 아이디어가 모호하면 인터뷰로 구체화
+    │
+    ▼
+/app-plan                        ← 3인 에이전트 토론 → MVP 범위 → 유저 플로우 → PRD
+    │
+    ├─▶ /design-system-to-figma  ← 디자인 토큰(tokens.css) + 컴포넌트 시스템
+    │       │
+    │       ▼
+    │   /prd-to-figma            ← 화면별 디자인 HTML (tokens.css 필요)
+    │
+    ▼
+/dev-plan                        ← 기술 아키텍처 + 디렉토리 구조 + 데이터 모델
+    │
+    ▼
+/dev-roadmap                     ← M0~M3 마일스톤, claude-task/human-task 분류
+    │
+    ▼
+/create-issues                   ← GitHub Issues 에픽 + 하위 작업 자동 생성
+    │
+    ▼
+구현 시작                        ← feature/ 브랜치에서 작업, develop에 PR
+    │                               claude-task는 AI가, human-task는 사람이
+    │
+    ├─▶ /sync-roadmap            ← 구현 중 수시로 로드맵 최신화
+    ├─▶ /handoff                 ← 세션 종료 시 핸드오프 문서
+    ├─▶ /resume                  ← 새 세션에서 이어하기
+    ├─▶ /clarify                 ← 모호한 이슈 구체화
+    │
+    ▼
+develop → main PR               ← 릴리스 시점에 main 병합 → 첫 배포
+```
+
+---
+
 ## 전체 파이프라인
 
 <img src="docs/diagrams/pipeline.png" alt="스킬 파이프라인" width="100%">
@@ -18,7 +58,7 @@
 
 | 단계 | 사람 | Claude Code |
 |------|------|-------------|
-| **시작** | `/init-project` 실행 | Git/GitHub 초기화, 규칙/스킬 복사, 라벨 생성 |
+| **시작** | `/init-project` 실행 | Git/GitHub 초기화, 규칙/스킬 복사, develop 브랜치, 라벨 생성 |
 | **기획** | 아이디어 설명, 결과 판단 | 에이전트 토론, MVP 범위, PRD 작성 |
 | **디자인** | 리뷰, 수정 요청 | 디자인 토큰, 컴포넌트, 화면별 HTML |
 | **개발 계획** | 아키텍처 리뷰 | 기술 설계, 플랫폼 스킬 자동 설치 |
@@ -58,23 +98,26 @@
 
 | 스킬 | 설명 |
 |------|------|
-| `/init-project` | 새 프로젝트 부트스트랩 |
+| `/init-project` | 새 프로젝트 부트스트랩 (Git Flow + 규칙/스킬 복사) |
 | `/product-blueprint` | SSOT 통합 마스터 HTML (각 스킬 완료 시 자동 업데이트) |
 | `/sync-roadmap` | GitHub Issues 상태 기반 로드맵 최신화 |
 | `/sync` | Git pull + 충돌 해결 |
 | `/ideation` | 8개 에이전트로 앱 아이디어 발굴 |
+| `/clarify` | 모호한 이슈/요청을 인터뷰로 구체화 |
 
 ---
 
-## 규칙 5개
+## 규칙 7개
 
 | 규칙 | 핵심 |
 |------|------|
-| **workflow** | 모호하면 물어보기, 계획 후 실행, 검증될 때까지 완료 아님 |
+| **workflow** | 모호하면 clarify 패턴으로 구체화, 계획 후 실행, 검증될 때까지 완료 아님 |
 | **ssot** | 문서는 정해진 경로에만, 스킬 간 의존성 명시 |
 | **github-issues** | 에픽/하위 구조, claude-task/human-task 라벨 |
 | **history** | `/handoff`로 세션 정리, 10개 필수 섹션 |
 | **meta** | 규칙 변경 시 사용자 확인 필수 |
+| **source-citation** | 소스 등급제 (Tier 1/2/3), 낮은 등급은 교차검증 필수 |
+| **git-flow** | main + develop + feature/ + fix/, main은 PR로만 병합 |
 
 ---
 
@@ -84,4 +127,4 @@
 > /init-project
 ```
 
-프로젝트 이름, 공개 여부, 설명만 입력하면 Git 초기화, GitHub 레포 생성, 규칙/스킬 복사, 라벨 생성까지 자동 완료.
+프로젝트 이름, 공개 여부, 설명만 입력하면 Git 초기화, GitHub 레포 생성, 규칙/스킬 복사, develop 브랜치 생성, 라벨 생성까지 자동 완료.
