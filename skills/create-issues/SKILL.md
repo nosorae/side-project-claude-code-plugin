@@ -20,6 +20,7 @@ user_invocable: true
 
 ## 전제조건
 
+- **GitHub CLI**: `gh --version`으로 확인. 미설치 시 macOS는 `brew install gh` 자동 시도, 그 외 OS는 설치 안내 후 중단. 미로그인 시 `gh auth login` 안내.
 - `docs/ssot/dev/deploy-roadmap.md` 파일이 존재해야 한다
 - GitHub 레포가 연결되어 있어야 한다 (`gh repo view`로 확인)
 - 없으면 실행을 거부하고, 필요한 선행 작업을 안내한다

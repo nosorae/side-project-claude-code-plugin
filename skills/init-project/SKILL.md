@@ -20,6 +20,21 @@ user_invocable: true
 
 ## 실행 단계
 
+### Step 0: 사전 요구사항 확인
+
+**Actions:**
+
+1. **GitHub CLI 확인**:
+   ```bash
+   gh --version
+   ```
+   - 설치되어 있으면 → Step 1로 진행
+   - 미설치 시 → OS에 따라 자동 설치 시도:
+     - macOS: `brew install gh` 실행
+     - 그 외: 사용자에게 설치 안내 후 중단
+   - 설치 완료 후 로그인 확인: `gh auth status`
+     - 미로그인 시: 사용자에게 `gh auth login` 실행을 안내한다 (대화형 명령이므로 사용자가 직접 실행)
+
 ### Step 1: 프로젝트 정보 수집
 
 **Actions:**
