@@ -74,6 +74,18 @@ user_invocable: true
    - `deploy-roadmap.md`에서 마일스톤과 작업 항목을 추출한다
    - 체크박스(`- [ ]`, `- [x]`)를 파싱하여 진행률 바를 계산·표시한다
 
+### Step 2.5: 디자인 스킬 로드 (필수 — 없으면 설치)
+
+HTML 생성 전에 반드시 `frontend-design` 스킬이 필요하다. 다음 순서로 확인한다:
+
+1. **설치 확인**: `Skill("frontend-design:frontend-design")` 호출을 시도한다
+2. **미설치 시 자동 설치**: 스킬이 없으면 즉시 설치한다:
+   ```bash
+   claude plugin add anthropic/frontend-design
+   ```
+   설치 후 다시 `Skill("frontend-design:frontend-design")`을 호출한다.
+3. **설치 실패 시**: 사용자에게 알리고 수동 설치를 안내한 뒤 **실행을 중단한다**.
+
 ### Step 3: HTML 문서 생성
 
 **Actions:**

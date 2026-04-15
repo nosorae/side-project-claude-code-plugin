@@ -60,13 +60,22 @@ PRD 마크다운의 화면 정의를 파싱하여, 디자인 토큰(tokens.css) 
    - 상태 (기본, 로딩, 에러, 빈 화면)
 4. `--screen` 필터가 있으면 해당 화면만 선택한다
 
-### Step 2.5: 디자인 스킬 로드
+### Step 2.5: 디자인 스킬 로드 (필수 — 없으면 설치)
 
-HTML 생성 전에 반드시 `frontend-design` 스킬을 호출하여 디자인 원칙과 스타일 가이드를 로드한다:
+HTML 생성 전에 반드시 `frontend-design` 스킬이 필요하다. 다음 순서로 확인한다:
 
-```
-Skill("frontend-design:frontend-design")
-```
+1. **설치 확인**: `Skill("frontend-design:frontend-design")` 호출을 시도한다
+2. **미설치 시 자동 설치**: 스킬이 없으면 즉시 설치한다:
+   ```bash
+   claude plugin add anthropic/frontend-design
+   ```
+   설치 후 다시 `Skill("frontend-design:frontend-design")`을 호출한다.
+3. **설치 실패 시**: 사용자에게 알리고 수동 설치를 안내한 뒤 **실행을 중단한다**:
+   ```
+   frontend-design 스킬을 자동 설치할 수 없습니다.
+   수동으로 설치해주세요: claude plugin add anthropic/frontend-design
+   설치 후 이 스킬을 다시 실행해주세요.
+   ```
 
 이 스킬이 제공하는 디자인 원칙(여백, 타이포그래피, 색상, 인터랙션 등)을 Step 3의 HTML 생성에 적용한다.
 
