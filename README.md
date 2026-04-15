@@ -15,13 +15,7 @@
 claude plugin install side-project-claude-settings --scope project
 ```
 
-이것만 하면 됩니다. 처음 사용할 때 동반 플러그인 4개(superpowers, slavingia/skills, phuryn/pm-skills, garrytan/gstack)가 설치되어 있는지 자동으로 확인하고, 없으면 설치를 안내합니다.
-
-한번에 전부 설치하고 싶으면:
-
-```bash
-bash install-all.sh
-```
+이것만 하면 됩니다. 처음 사용할 때 동반 플러그인 4개(superpowers, slavingia/skills, phuryn/pm-skills, garrytan/gstack)가 설치되어 있는지 자동으로 확인하고, 없으면 알아서 설치합니다.
 
 ---
 
