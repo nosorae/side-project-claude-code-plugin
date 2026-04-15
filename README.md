@@ -2,7 +2,7 @@
 
 사이드 프로젝트를 **아이디어 → 기획 → 디자인 → 개발 계획 → 이슈 관리 → 구현**까지 Claude Code와 함께 진행하기 위한 규칙 + 스킬 모음.
 
-`/init-project`로 새 프로젝트를 만들면 규칙/스킬이 자동 복사되고, **`product-blueprint.html`(마스터 문서)**이 생성됩니다. 각 스킬이 완료될 때마다 마스터 문서가 자동 업데이트되어 프로젝트 전체 상태를 한 곳에서 확인할 수 있습니다.
+`/init-project`로 새 프로젝트를 만들면 플러그인이 설치되어 규칙/스킬이 자동 적용되고, **`product-blueprint.html`(마스터 문서)**이 생성됩니다. 각 스킬이 완료될 때마다 마스터 문서가 자동 업데이트되어 프로젝트 전체 상태를 한 곳에서 확인할 수 있습니다.
 
 ## 설치
 
@@ -10,7 +10,9 @@
 > /init-project
 ```
 
-프로젝트 이름, 공개 여부, 설명만 입력하면 Git 초기화, GitHub 레포 생성, 규칙/스킬 복사, develop 브랜치 생성, 라벨 생성까지 자동 완료. 대화 자동 기록 훅(`hooks/log-conversation.sh`)도 함께 설치되어 모든 대화가 `docs/sessions/`에 자동 저장됩니다.
+프로젝트 이름, 공개 여부, 설명만 입력하면 Git 초기화, GitHub 레포 생성, 플러그인 설치(규칙 8개 + 스킬 16개), develop 브랜치 생성, 라벨 생성까지 자동 완료. 훅 2개도 함께 설치됩니다:
+- `log-conversation.sh` — 모든 대화가 `docs/sessions/`에 자동 저장
+- `remind-blueprint-update.sh` — SSOT 문서 변경 시 블루프린트 업데이트 리마인드
 
 ---
 
@@ -26,8 +28,9 @@
 
 | 단계 | 사람 | Claude Code |
 |------|------|-------------|
-| **시작** | `/init-project` 실행 | Git/GitHub 초기화, 규칙/스킬 복사, develop 브랜치, 라벨 생성 |
-| **기획** | 아이디어 설명, 결과 판단 | 에이전트 토론, MVP 범위, PRD 작성 |
+| **시작** | `/init-project` 실행 | Git/GitHub 초기화, 플러그인 설치, develop 브랜치, 라벨 생성 |
+| **시장 조사** | 아이디어 설명 (선택) | 3인 에이전트 토론으로 시장성 검증 |
+| **기획** | 결과 판단, 방향 결정 | 핵심 가치 정의, MVP 범위, PRD 작성 |
 | **디자인** | 리뷰, 수정 요청 | 디자인 토큰, 컴포넌트, 화면별 HTML |
 | **개발 계획** | 아키텍처 리뷰 | 기술 설계, 플랫폼 스킬 자동 설치 |
 | **구현** | human-task 수행, 코드 리뷰 | claude-task 독립 수행, 테스트, 버그 수정 |
@@ -46,7 +49,7 @@
 | `/app-plan` | PRD + 유저플로우 HTML | 핵심 가치 → MVP 범위 → 유저 플로우 → PRD |
 | `/design-system-to-figma` | `tokens.css` + `design-system.html` | 디자인 토큰 + 컴포넌트 (HTML 기본, Figma 선택) |
 | `/prd-to-figma` | `screen-*.html` | 화면별 디자인 HTML (tokens.css 선행 필요) |
-| `/dev-plan` | `dev-plan.md` + 아키텍처 HTML | 기술 아키텍처 + 플랫폼 스킬 자동 설치 |
+| `/dev-plan` | `dev-plan.md` + 아키텍처 HTML | 기술 아키텍처 + 베스트 프랙티스 스킬 필수 설치 |
 | `/dev-roadmap` | `deploy-roadmap.md` + 타임라인 HTML | M0~M3 마일스톤, claude-task/human-task 분류 |
 | `/create-issues` | GitHub Issues | 에픽 + 하위 작업 자동 생성 |
 
