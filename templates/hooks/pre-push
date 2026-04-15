@@ -1,0 +1,41 @@
+#!/bin/bash
+# 커밋 메시지에 이슈 번호 포함 여부 체크
+# develop, feature/*, fix/* 브랜치에서 push할 때 동작
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# main은 PR로만 머지하므로 스킵
+if [ "$BRANCH" = "main" ]; then
+  exit 0
+fi
+
+# 리모트에 없는 새 커밋만 체크
+REMOTE="origin/$BRANCH"
+if git rev-parse --verify "$REMOTE" >/dev/null 2>&1; then
+  COMMITS=$(git log "$REMOTE..HEAD" --format="%H %s")
+else
+  COMMITS=$(git log HEAD --format="%H %s")
+fi
+
+ERRORS=""
+while IFS= read -r line; do
+  [ -z "$line" ] && continue
+  HASH=$(echo "$line" | cut -d' ' -f1)
+  MSG=$(echo "$line" | cut -d' ' -f2-)
+
+  # 이슈 번호 (#N) 또는 특수 접두사(Init, Docs, Merge) 확인
+  if ! echo "$MSG" | grep -qE '(#[0-9]+|^Init:|^Docs:|^Merge|^Rename:)'; then
+    SHORT=$(echo "$HASH" | cut -c1-7)
+    ERRORS="$ERRORS\n❌ $SHORT: $MSG\n   해결 방법: git commit --amend -m \"$MSG (#이슈번호)\""
+  fi
+done <<< "$COMMITS"
+
+if [ -n "$ERRORS" ]; then
+  echo ""
+  echo "=== 커밋 메시지 규칙 체크 실패 ==="
+  echo -e "$ERRORS"
+  echo ""
+  echo "모든 커밋 메시지에 이슈 번호(#N)가 포함되어야 합니다."
+  echo "해결 후 다시 push하세요."
+  exit 1
+fi

@@ -34,18 +34,73 @@ user_invocable: true
 
 ## 실행 단계
 
-### Step 1: 사전 준비
+### Step 1: GitHub 인프라 세팅
 
 **Actions:**
 
+이슈를 만들기 전에 규칙이 강제되는 환경을 먼저 만든다.
+
 1. `docs/ssot/dev/deploy-roadmap.md`를 읽고 마일스톤/에픽/작업 구조를 파악한다
 2. GitHub 레포 연결 상태를 확인한다: `gh repo view`
-3. 필요한 라벨이 존재하는지 확인하고, 없으면 생성한다:
+
+3. **라벨 생성:**
    ```bash
-   gh label create "epic" --description "에픽 이슈" --color "6f42c1"
-   gh label create "claude-task" --description "Claude Code가 독립 수행 가능한 작업" --color "0075ca"
-   gh label create "human-task" --description "사람이 직접 수행해야 하는 작업" --color "e4e669"
+   gh label create "epic" --description "에픽 이슈" --color "6f42c1" 2>/dev/null || true
+   gh label create "claude-task" --description "Claude Code가 독립 수행 가능한 작업" --color "0075ca" 2>/dev/null || true
+   gh label create "human-task" --description "사람이 직접 수행해야 하는 작업" --color "e4e669" 2>/dev/null || true
+   gh label create "priority/now" --description "지금 해야 함" --color "d73a4a" 2>/dev/null || true
+   gh label create "priority/next" --description "다음에 할 것" --color "fbca04" 2>/dev/null || true
+   gh label create "priority/later" --description "나중에" --color "0e8a16" 2>/dev/null || true
    ```
+
+4. **마일스톤 생성 (버전 기반):**
+   로드맵의 마일스톤을 실제 GitHub 마일스톤으로 생성한다. M0~M3 대신 릴리스 버전을 사용한다.
+   ```bash
+   # 예시: MVP 기준
+   gh api repos/{owner}/{repo}/milestones -f title="v0.1.0" -f description="MVP — 핵심 기능만"
+   gh api repos/{owner}/{repo}/milestones -f title="v0.2.0" -f description="보조 기능 + 개선"
+   gh api repos/{owner}/{repo}/milestones -f title="v1.0.0" -f description="정식 릴리스"
+   ```
+   버전 이름과 설명은 로드맵 내용에 맞게 조정한다.
+
+5. **GitHub Actions 워크플로우 복사:**
+   플러그인의 `templates/.github/` 디렉토리를 프로젝트에 복사한다.
+   ```bash
+   cp -r ${CLAUDE_PLUGIN_ROOT}/templates/.github/ .github/
+   ```
+   이 워크플로우가 PR마다 자동 실행되어 규칙을 강제한다:
+   - PR에 이슈 연결 없으면 → 체크 실패
+   - 이슈에 라벨 없으면 → 체크 실패
+   - 이슈에 마일스톤 없으면 → 체크 실패
+   - main 직접 머지 시도하면 → 체크 실패
+
+6. **이슈 템플릿 복사:**
+   위 `.github/` 복사에 이미 포함됨. claude-task, human-task 템플릿이 GitHub 이슈 생성 UI에 자동 적용된다.
+
+7. **pre-push hook 설치:**
+   ```bash
+   cp ${CLAUDE_PLUGIN_ROOT}/templates/hooks/pre-push .git/hooks/pre-push
+   chmod +x .git/hooks/pre-push
+   ```
+   커밋 메시지에 이슈 번호(#N) 없으면 push를 reject한다.
+
+8. **Branch Protection 설정:**
+   ```bash
+   gh api repos/{owner}/{repo}/branches/main/protection -X PUT \
+     -f "required_status_checks[strict]=true" \
+     -f "required_status_checks[contexts][]=check-pr-rules" \
+     -f "enforce_admins=true" \
+     -f "required_pull_request_reviews[required_approving_review_count]=0" \
+     -f "restrictions=null"
+   ```
+   main 브랜치에 직접 push 불가, PR 체크 통과 필수.
+
+9. **Projects 보드 생성:**
+   ```bash
+   gh project create --title "{프로젝트이름}" --owner @me
+   ```
+   컬럼: Backlog → In Progress → Review → Done
+   이슈가 닫히면 자동으로 Done으로 이동하도록 설정.
 
 ### Step 2: 사용자 싱크
 

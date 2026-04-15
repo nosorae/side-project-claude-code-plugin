@@ -1,0 +1,79 @@
+name: PR 규칙 체크
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, labeled, unlabeled]
+
+jobs:
+  check-pr-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 이슈 연결 확인
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+            const title = pr.title || '';
+            const errors = [];
+
+            // 1. PR 본문에 이슈 참조가 있는지
+            const issuePattern = /(closes|fixes|resolves)\s+#(\d+)/gi;
+            const matches = [...body.matchAll(issuePattern), ...title.matchAll(issuePattern)];
+
+            if (matches.length === 0) {
+              errors.push(
+                '❌ PR에 연결된 이슈가 없습니다.\n' +
+                '   해결 방법: PR 본문에 "closes #이슈번호"를 추가하세요.\n' +
+                '   예시: closes #42'
+              );
+            }
+
+            // 2. 연결된 이슈에 라벨이 있는지
+            for (const match of matches) {
+              const issueNumber = parseInt(match[2]);
+              try {
+                const issue = await github.rest.issues.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber
+                });
+
+                const labels = issue.data.labels.map(l => l.name);
+                const hasTaskLabel = labels.includes('claude-task') || labels.includes('human-task');
+                const hasMilestone = issue.data.milestone !== null;
+
+                if (!hasTaskLabel) {
+                  errors.push(
+                    `❌ 이슈 #${issueNumber}에 작업 라벨이 없습니다.\n` +
+                    `   해결 방법: gh issue edit ${issueNumber} --add-label "claude-task" 또는 "human-task"`
+                  );
+                }
+
+                if (!hasMilestone) {
+                  errors.push(
+                    `❌ 이슈 #${issueNumber}에 마일스톤이 없습니다.\n` +
+                    `   해결 방법: gh issue edit ${issueNumber} --milestone "v0.1.0"`
+                  );
+                }
+              } catch (e) {
+                errors.push(`⚠️ 이슈 #${issueNumber}을 찾을 수 없습니다.`);
+              }
+            }
+
+            // 3. PR이 main으로 직접 머지하려는 게 아닌지
+            if (pr.base.ref === 'main' && !pr.head.ref.startsWith('release/') && pr.head.ref !== 'develop') {
+              errors.push(
+                '❌ main 브랜치에 직접 머지할 수 없습니다.\n' +
+                '   해결 방법: develop 브랜치로 PR 대상을 변경하세요.\n' +
+                '   main으로의 머지는 develop 또는 release/ 브랜치에서만 가능합니다.'
+              );
+            }
+
+            if (errors.length > 0) {
+              const message = '## PR 규칙 체크 실패\n\n' + errors.join('\n\n') +
+                '\n\n---\n각 에러 메시지의 "해결 방법"을 따라 수정한 뒤 다시 push하세요.';
+              core.setFailed(message);
+            } else {
+              console.log('✅ 모든 PR 규칙 통과');
+            }
