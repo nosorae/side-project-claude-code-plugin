@@ -11,27 +11,17 @@
 ## 설치
 
 ```bash
-# 기획 → 디자인 → 개발 계획 → 이슈 파이프라인
 /plugin marketplace add nosorae/side-project-claude-settings
 claude plugin install side-project-claude-settings --scope project
-
-# 아이디어 검증, 스타트업 방법론
-/plugin marketplace add slavingia/skills
-claude plugin install skills --scope project
-
-# PM 스킬, 고객 인터뷰
-/plugin marketplace add phuryn/pm-skills
-claude plugin install pm-skills --scope project
-
-# 구현 워크플로우 (TDD, 코드 리뷰, 디버깅)
-/plugin install superpowers@claude-plugins-official
-
-# 작업 자동 분할, 체크포인트
-/plugin marketplace add garrytan/gstack
-claude plugin install gstack --scope project
 ```
 
-이게 전부입니다. 설치하고 나면 아래 프로세스를 순서대로 따라가면 됩니다.
+이것만 하면 됩니다. 처음 사용할 때 동반 플러그인 4개(superpowers, slavingia/skills, phuryn/pm-skills, garrytan/gstack)가 설치되어 있는지 자동으로 확인하고, 없으면 설치를 안내합니다.
+
+한번에 전부 설치하고 싶으면:
+
+```bash
+bash install-all.sh
+```
 
 ---
 
