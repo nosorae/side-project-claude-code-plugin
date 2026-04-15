@@ -16,6 +16,10 @@
           {
             "type": "command",
             "command": "bash hooks/log-conversation.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash hooks/remind-blueprint-update.sh"
           }
         ]
       }
