@@ -6,9 +6,8 @@
     "name": "nosorae",
     "url": "https://github.com/nosorae"
   },
-  "repository": "https://github.com/nosorae/side-project-claude-code-plugin",
+  "repository": "https://github.com/nosorae/side-project-claude-settings",
   "license": "MIT",
   "keywords": ["side-project", "pipeline", "planning", "design", "development"],
-  "skills": "./skills/",
-  "hooks": "./hooks/hooks.json"
+  "skills": "./skills/"
 }

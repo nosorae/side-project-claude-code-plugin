@@ -7,10 +7,10 @@ echo ""
 
 # 1. 이 플러그인
 echo "[1/5] side-project-claude-code-plugin 설치 중..."
-claude plugin install side-project-claude-code-plugin@nosorae/side-project-claude-code-plugin --scope project 2>/dev/null || {
+claude plugin install side-project-claude-code-plugin@side-project-claude-settings --scope project 2>/dev/null || {
   echo "  -> 마켓플레이스 등록 후 재시도..."
-  /plugin marketplace add nosorae/side-project-claude-code-plugin 2>/dev/null
-  claude plugin install side-project-claude-code-plugin --scope project
+  claude plugin marketplace add nosorae/side-project-claude-settings --scope project 2>/dev/null
+  claude plugin install side-project-claude-code-plugin@side-project-claude-settings --scope project
 }
 
 # 2. superpowers (구현 워크플로우)
@@ -20,21 +20,21 @@ claude plugin install superpowers@claude-plugins-official --scope project 2>/dev
 # 3. slavingia/skills (아이디어 검증)
 echo "[3/5] slavingia/skills 설치 중..."
 claude plugin install skills@slavingia/skills --scope project 2>/dev/null || {
-  /plugin marketplace add slavingia/skills 2>/dev/null
+  claude plugin marketplace add slavingia/skills --scope project 2>/dev/null
   claude plugin install skills --scope project 2>/dev/null || echo "  -> 수동 설치 필요"
 }
 
 # 4. phuryn/pm-skills (PM/인터뷰)
 echo "[4/5] phuryn/pm-skills 설치 중..."
 claude plugin install pm-skills@phuryn/pm-skills --scope project 2>/dev/null || {
-  /plugin marketplace add phuryn/pm-skills 2>/dev/null
+  claude plugin marketplace add phuryn/pm-skills --scope project 2>/dev/null
   claude plugin install pm-skills --scope project 2>/dev/null || echo "  -> 수동 설치 필요"
 }
 
 # 5. garrytan/gstack (작업 관리)
 echo "[5/5] garrytan/gstack 설치 중..."
 claude plugin install gstack@garrytan/gstack --scope project 2>/dev/null || {
-  /plugin marketplace add garrytan/gstack 2>/dev/null
+  claude plugin marketplace add garrytan/gstack --scope project 2>/dev/null
   claude plugin install gstack --scope project 2>/dev/null || echo "  -> 수동 설치 필요"
 }
 

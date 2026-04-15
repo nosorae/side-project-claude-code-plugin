@@ -9,10 +9,11 @@
 ## 설치
 
 ```bash
-claude plugin install side-project-claude-code-plugin --scope project
+claude plugin marketplace add nosorae/side-project-claude-settings --scope user
+claude plugin install side-project-claude-code-plugin@side-project-claude-settings --scope project
 ```
 
-이것만 하면 됩니다. 필요한 동반 플러그인 4개는 첫 사용 시 자동으로 설치됩니다.
+처음 한 번은 marketplace를 추가해야 합니다. 그 다음부터는 설치 명령만 다시 실행하면 됩니다. 필요한 동반 플러그인 4개는 첫 사용 시 자동으로 설치됩니다.
 
 ---
 

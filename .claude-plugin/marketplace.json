@@ -1,0 +1,23 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "side-project-claude-settings",
+  "owner": {
+    "name": "nosorae"
+  },
+  "metadata": {
+    "description": "Side project workflow plugin marketplace for Claude Code.",
+    "version": "2.0.0"
+  },
+  "plugins": [
+    {
+      "name": "side-project-claude-code-plugin",
+      "description": "사이드 프로젝트 공용 Claude Code 스킬 + 훅 모음 (기획 → 디자인 → 개발 → 배포 파이프라인).",
+      "version": "2.0.0",
+      "author": {
+        "name": "nosorae"
+      },
+      "source": "./",
+      "homepage": "https://github.com/nosorae/side-project-claude-settings"
+    }
+  ]
+}
