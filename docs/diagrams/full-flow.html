@@ -6,12 +6,12 @@
 <title>플러그인 설치부터 첫 배포까지</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0d1117; color: #e6edf3; font-family: -apple-system, 'Pretendard', sans-serif; padding: 40px; min-width: 900px; }
+  body { background: #0d1117; color: #e6edf3; font-family: -apple-system, 'Pretendard', sans-serif; padding: 40px 40px 80px 40px; min-width: 900px; }
   h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
   .subtitle { color: #8b949e; font-size: 16px; margin-bottom: 48px; }
   .phase { margin-bottom: 40px; }
   .phase-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-  .phase-num { background: #7c3aed; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+  .phase-num { background: #7c3aed; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
   .phase-title { font-size: 14px; font-weight: 600; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; }
   .cards { display: flex; gap: 16px; flex-wrap: wrap; margin-left: 40px; }
   .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; min-width: 220px; max-width: 280px; }
@@ -22,8 +22,9 @@
   .card.optional .card-title::after { content: ' (선택)'; font-size: 12px; color: #8b949e; font-weight: 400; }
   .arrow { margin-left: 52px; color: #30363d; font-size: 24px; line-height: 1; margin: 8px 0; }
   .enforce-badge { display: inline-block; background: #1f2937; border: 1px solid #374151; border-radius: 6px; padding: 2px 8px; font-size: 11px; color: #34d399; margin-top: 8px; }
+  .source-badge { display: inline-block; background: #1a1a2e; border: 1px solid #30365d; border-radius: 6px; padding: 2px 8px; font-size: 10px; color: #818cf8; margin-top: 4px; }
   .section-divider { border: none; border-top: 1px solid #21262d; margin: 32px 0; }
-  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #21262d; }
+  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #21262d; padding-bottom: 40px; }
   .footer-cards { display: flex; gap: 12px; flex-wrap: wrap; margin-left: 40px; }
   .footer-card { background: #0d1117; border: 1px solid #21262d; border-radius: 8px; padding: 12px 16px; font-size: 13px; }
   .footer-card strong { display: block; font-size: 14px; margin-bottom: 4px; font-family: 'SF Mono', monospace; }
@@ -35,6 +36,7 @@
 <h1>From Plugin Install to First Deploy</h1>
 <p class="subtitle">플러그인 설치부터 첫 배포까지 전체 흐름</p>
 
+<!-- Step 0: Setup -->
 <div class="phase">
   <div class="phase-header">
     <div class="phase-num">0</div>
@@ -43,7 +45,7 @@
   <div class="cards">
     <div class="card">
       <div class="card-title">플러그인 설치</div>
-      <div class="card-desc">마켓플레이스 등록 후 설치<br>스킬 15개 + hooks 2개 자동 적용</div>
+      <div class="card-desc">이 플러그인 하나만 설치<br>동반 플러그인 4개는 자동 설치</div>
       <div class="card-output">claude plugin install</div>
       <div class="enforce-badge">hooks 자동 등록</div>
     </div>
@@ -52,21 +54,39 @@
 
 <div class="arrow">↓</div>
 
+<!-- Step 1: Idea Validation -->
 <div class="phase">
   <div class="phase-header">
     <div class="phase-num">1</div>
-    <div class="phase-title">Planning</div>
+    <div class="phase-title">Idea Validation</div>
   </div>
   <div class="cards">
     <div class="card optional">
-      <div class="card-title">/market-research</div>
-      <div class="card-desc">3인 에이전트 토론으로<br>시장성 검증</div>
-      <div class="card-output">docs/ssot/prd/*-시장조사.md</div>
+      <div class="card-title">validate-idea</div>
+      <div class="card-desc">Mom Test 방식 아이디어 검증<br>Lean Canvas 생성</div>
+      <div class="source-badge">slavingia/skills</div>
     </div>
+    <div class="card optional">
+      <div class="card-title">제품 디스커버리</div>
+      <div class="card-desc">고객 인터뷰 설계<br>타겟 고객 분석</div>
+      <div class="source-badge">phuryn/pm-skills</div>
+    </div>
+  </div>
+</div>
+
+<div class="arrow">↓</div>
+
+<!-- Step 2: Planning -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num">2</div>
+    <div class="phase-title">Planning</div>
+  </div>
+  <div class="cards">
     <div class="card">
       <div class="card-title">/app-plan</div>
       <div class="card-desc">핵심 가치 정의 (3인 토론)<br>MVP 범위 + 유저 플로우 정의</div>
-      <div class="card-output">docs/ssot/prd/*-기획서.md<br>userflow.html + screen-map.html</div>
+      <div class="card-output">기획서.md + userflow.html</div>
       <div class="enforce-badge">후속 스킬의 전제조건</div>
     </div>
   </div>
@@ -74,9 +94,10 @@
 
 <div class="arrow">↓</div>
 
+<!-- Step 3: Design -->
 <div class="phase">
   <div class="phase-header">
-    <div class="phase-num">2</div>
+    <div class="phase-num">3</div>
     <div class="phase-title">Design</div>
   </div>
   <div class="cards">
@@ -97,9 +118,10 @@
 
 <div class="arrow">↓</div>
 
+<!-- Step 4: Dev Planning -->
 <div class="phase">
   <div class="phase-header">
-    <div class="phase-num">3</div>
+    <div class="phase-num">4</div>
     <div class="phase-title">Dev Planning</div>
   </div>
   <div class="cards">
@@ -126,38 +148,38 @@
 
 <div class="arrow">↓</div>
 
+<!-- Step 5: Implementation -->
 <div class="phase">
   <div class="phase-header">
-    <div class="phase-num">4</div>
+    <div class="phase-num">5</div>
     <div class="phase-title">Implementation</div>
   </div>
   <div class="cards">
     <div class="card" style="border-color: #238636;">
       <div class="card-title" style="color: #3fb950;">feature/ 브랜치에서 구현</div>
-      <div class="card-desc"><span style="color: #3fb950;">claude-task</span>: AI가 독립 수행<br><span style="color: #e3b341;">human-task</span>: 사람이 직접 수행</div>
+      <div class="card-desc"><span style="color: #3fb950;">claude-task</span>: TDD + 서브에이전트 개발<br><span style="color: #e3b341;">human-task</span>: 외부 서비스 세팅</div>
       <div class="card-output">→ develop으로 PR</div>
+      <div class="source-badge">superpowers + gstack</div>
     </div>
     <div class="card" style="border-color: #da3633;">
       <div class="card-title">develop → main</div>
       <div class="card-desc">빌드 + 테스트 통과<br>main으로 PR 머지</div>
-      <div class="card-output" style="color: #f85149;">🎉 첫 배포!</div>
+      <div class="card-output" style="color: #f85149;">첫 배포!</div>
     </div>
   </div>
 </div>
 
 <hr class="section-divider">
 
+<!-- Footer: 보조 스킬 -->
 <div class="footer">
   <div class="phase-header">
-    <div class="phase-num" style="background: #21262d;">⚡</div>
+    <div class="phase-num" style="background: #21262d;">+</div>
     <div class="phase-title">언제든 사용 가능한 보조 스킬</div>
   </div>
   <div class="footer-cards">
-    <div class="footer-card"><strong>/handoff</strong><span>세션 종료 시 핸드오프</span></div>
-    <div class="footer-card"><strong>/resume</strong><span>이전 세션에서 이어하기</span></div>
-    <div class="footer-card"><strong>/sync-roadmap</strong><span>이슈 기반 로드맵 동기화</span></div>
-    <div class="footer-card"><strong>/clarify</strong><span>모호한 요청 구체화</span></div>
     <div class="footer-card"><strong>/product-blueprint</strong><span>SSOT 통합 마스터 HTML</span></div>
+    <div class="footer-card"><strong>/sync-roadmap</strong><span>이슈 기반 로드맵 동기화</span></div>
   </div>
 </div>
 
