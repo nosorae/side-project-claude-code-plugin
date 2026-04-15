@@ -1,4 +1,4 @@
-# Side Project Claude Settings
+# Side Project Claude Code Plugin
 
 사이드 프로젝트할 때 쓰는 Claude Code 세팅입니다.
 
@@ -9,7 +9,7 @@
 ## 설치
 
 ```bash
-claude plugin install side-project-claude-settings --scope project
+claude plugin install side-project-claude-code-plugin --scope project
 ```
 
 이것만 하면 됩니다. 필요한 동반 플러그인 4개는 첫 사용 시 자동으로 설치됩니다.

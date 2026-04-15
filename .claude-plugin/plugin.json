@@ -1,12 +1,12 @@
 {
-  "name": "side-project-claude-settings",
+  "name": "side-project-claude-code-plugin",
   "description": "사이드 프로젝트 공용 Claude Code 스킬 + 훅 모음 (기획 → 디자인 → 개발 → 배포 파이프라인). /init-project로 새 프로젝트 시작, /app-plan으로 기획, /design-system-to-figma로 디자인, /dev-plan으로 개발 계획.",
   "version": "2.0.0",
   "author": {
     "name": "nosorae",
     "url": "https://github.com/nosorae"
   },
-  "repository": "https://github.com/nosorae/side-project-claude-settings",
+  "repository": "https://github.com/nosorae/side-project-claude-code-plugin",
   "license": "MIT",
   "keywords": ["side-project", "pipeline", "planning", "design", "development"],
   "skills": "./skills/",

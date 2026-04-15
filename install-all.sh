@@ -6,11 +6,11 @@ echo "=== Side Project Claude Settings 전체 설치 ==="
 echo ""
 
 # 1. 이 플러그인
-echo "[1/5] side-project-claude-settings 설치 중..."
-claude plugin install side-project-claude-settings@nosorae/side-project-claude-settings --scope project 2>/dev/null || {
+echo "[1/5] side-project-claude-code-plugin 설치 중..."
+claude plugin install side-project-claude-code-plugin@nosorae/side-project-claude-code-plugin --scope project 2>/dev/null || {
   echo "  -> 마켓플레이스 등록 후 재시도..."
-  /plugin marketplace add nosorae/side-project-claude-settings 2>/dev/null
-  claude plugin install side-project-claude-settings --scope project
+  /plugin marketplace add nosorae/side-project-claude-code-plugin 2>/dev/null
+  claude plugin install side-project-claude-code-plugin --scope project
 }
 
 # 2. superpowers (구현 워크플로우)
