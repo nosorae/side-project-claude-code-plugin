@@ -6,7 +6,7 @@
 
 ```
 (외부) validate-idea → /app-plan → /design-system-to-figma → /prd-to-figma
-                                → /dev-plan → /dev-roadmap → /create-issues → /code-review
+                                → /dev-plan → /dev-roadmap → /create-issues → (외부) superpowers로 구현
 ```
 
 > 아이디어 검증은 slavingia/skills의 `validate-idea`, 고객 인터뷰는 phuryn/pm-skills 사용.
