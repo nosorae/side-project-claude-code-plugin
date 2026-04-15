@@ -73,7 +73,7 @@ cp "$SOURCE/rules/"*.md {프로젝트경로}/.claude/rules/
 
 # 스킬 복사 (init-project, skill-creator 제외 — 메타 레포 전용 스킬)
 mkdir -p {프로젝트경로}/.claude/skills
-for skill in app-plan design-system-to-figma prd-to-figma dev-plan dev-roadmap create-issues handoff resume product-blueprint interview ideation sync-roadmap clarify sync; do
+for skill in app-plan market-research design-system-to-figma prd-to-figma dev-plan dev-roadmap create-issues handoff resume product-blueprint interview ideation sync-roadmap clarify sync; do
   cp -r "$SOURCE/skills/$skill" {프로젝트경로}/.claude/skills/
 done
 
@@ -279,7 +279,7 @@ GitHub: https://github.com/{사용자}/{프로젝트이름}
 
 포함된 항목:
 - 규칙 7개 (ssot, workflow, history, github-issues, meta, source-citation, git-flow)
-- 스킬 14개 (app-plan, design-system-to-figma, prd-to-figma, dev-plan, dev-roadmap, create-issues, handoff, resume, product-blueprint, interview, ideation, sync-roadmap, clarify, sync)
+- 스킬 15개 (app-plan, market-research, design-system-to-figma, prd-to-figma, dev-plan, dev-roadmap, create-issues, handoff, resume, product-blueprint, interview, ideation, sync-roadmap, clarify, sync)
 - hooks (log-conversation: 대화 기록 자동 로깅)
 - Git Flow (main + develop 브랜치)
 - docs/ 디렉토리 구조 (ssot/prd, ssot/design, ssot/dev, refs/, handoff/, lessons/, sessions/)
