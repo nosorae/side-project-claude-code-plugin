@@ -59,6 +59,12 @@ user_invocable: true
    - 어떤 작업이 다른 작업보다 먼저 완료되어야 하는지
    - 병렬 수행 가능한 작업 그룹
 
+5. **작업 배치 순서 원칙** (필수):
+   - **1순위**: human-task에 의존하지 않는 독립 claude-task → 가장 앞에 배치 (즉시 병렬 수행 가능)
+   - **2순위**: human-task → 사람이 처리하는 동안 1순위 작업과 병렬 진행
+   - **3순위**: human-task에 의존하는 claude-task → human-task 완료 후 수행
+   - 이유: claude-task가 먼저 끝나 있으면 human-task 완료 즉시 다음 단계로 진입 가능하여 전체 리드타임을 최소화한다
+
 ### Step 3: 문서 생성 및 저장
 
 **Actions:**
@@ -83,11 +89,15 @@ user_invocable: true
 ## M0: 프로젝트 셋업
 
 ### Epic: 개발 환경 구성
-| # | 작업 | 타입 | 의존성 |
-|---|------|------|--------|
-| 1 | 프로젝트 초기화 | claude-task | - |
-| 2 | Supabase 프로젝트 생성 | human-task | - |
-| 3 | 환경변수 설정 | claude-task | #2 |
+
+> **배치 원칙**: 독립 claude-task → human-task → 의존 claude-task 순서
+
+| # | 작업 | 타입 | 의존성 | 비고 |
+|---|------|------|--------|------|
+| 1 | 프로젝트 초기화 | claude-task | - | 즉시 수행 가능 |
+| 2 | 기본 구조 및 보일러플레이트 생성 | claude-task | - | 즉시 수행 가능 |
+| 3 | Supabase 프로젝트 생성 | human-task | - | #1, #2와 병렬 진행 |
+| 4 | 환경변수 설정 | claude-task | #3 | human-task 완료 후 |
 
 ## M1: 핵심 기능
 [에픽별 작업 테이블]
