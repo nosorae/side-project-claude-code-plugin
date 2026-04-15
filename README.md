@@ -42,7 +42,8 @@
 | 스킬 | 산출물 | 설명 |
 |------|--------|------|
 | `/interview` | `interview-notes.md` | 점진적 질문으로 요구사항 구체화 (선택) |
-| `/app-plan` | PRD + 유저플로우 HTML | 에이전트 3인 토론 → MVP → 유저 플로우 |
+| `/market-research` | `*-시장조사.md` | 3인 에이전트 토론으로 시장성 검증 (선택) |
+| `/app-plan` | PRD + 유저플로우 HTML | 핵심 가치 → MVP 범위 → 유저 플로우 → PRD |
 | `/design-system-to-figma` | `tokens.css` + `design-system.html` | 디자인 토큰 + 컴포넌트 (HTML 기본, Figma 선택) |
 | `/prd-to-figma` | `screen-*.html` | 화면별 디자인 HTML (tokens.css 선행 필요) |
 | `/dev-plan` | `dev-plan.md` + 아키텍처 HTML | 기술 아키텍처 + 플랫폼 스킬 자동 설치 |
@@ -60,7 +61,7 @@
 
 | 스킬 | 설명 |
 |------|------|
-| `/init-project` | 새 프로젝트 부트스트랩 (Git Flow + 규칙/스킬 복사) |
+| `/init-project` | 새 프로젝트 부트스트랩 (플러그인 설치 + Git Flow) |
 | `/product-blueprint` | SSOT 통합 마스터 HTML (각 스킬 완료 시 자동 업데이트) |
 | `/sync-roadmap` | GitHub Issues 상태 기반 로드맵 최신화 |
 | `/sync` | Git pull + 충돌 해결 |
@@ -69,10 +70,11 @@
 
 ---
 
-## 규칙 7개
+## 규칙 8개
 
 | 규칙 | 핵심 |
 |------|------|
+| **pipeline** | 파이프라인 순서 강제, 산출물 기반 전제조건, --skip 옵션, 현황 조회 |
 | **workflow** | 모호하면 clarify 패턴으로 구체화, 계획 후 실행, 검증될 때까지 완료 아님 |
 | **ssot** | 문서는 정해진 경로에만, 스킬 간 의존성 명시 |
 | **github-issues** | 에픽/하위 구조, claude-task/human-task 라벨 |
