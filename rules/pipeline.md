@@ -5,16 +5,18 @@
 모든 파이프라인 스킬은 아래 순서를 따른다. 각 스킬은 실행 전에 선행 단계의 산출물이 존재하는지 반드시 확인해야 한다.
 
 ```
-(선택) /market-research → /app-plan → /design-system-to-figma → /prd-to-figma
-                                   → /dev-plan → /dev-roadmap → /create-issues
+(외부) validate-idea → /app-plan → /design-system-to-figma → /prd-to-figma
+                                → /dev-plan → /dev-roadmap → /create-issues → /code-review
 ```
+
+> 아이디어 검증은 slavingia/skills의 `validate-idea`, 고객 인터뷰는 phuryn/pm-skills 사용.
+> 구현 단계는 superpowers가 담당.
 
 ## 산출물 기반 전제조건 매핑
 
 | 스킬 | 선행 산출물 (하나라도 없으면 경고) | 산출물 |
 |------|----------------------------------|--------|
-| market-research | (없음) | `docs/ssot/prd/*-시장조사.md` |
-| app-plan | (없음, market-research는 선택) | `docs/ssot/prd/*-기획서.md` |
+| app-plan | (없음) | `docs/ssot/prd/*-기획서.md` |
 | design-system-to-figma | `docs/ssot/prd/*-기획서.md` | `docs/ssot/design/system/tokens.css` |
 | prd-to-figma | `docs/ssot/design/system/tokens.css` | `docs/ssot/design/screens/screen-*.html` |
 | dev-plan | `docs/ssot/prd/*-기획서.md` | `docs/ssot/dev/dev-plan.md` |

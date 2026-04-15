@@ -3,7 +3,7 @@ name: app-plan
 description: |
   앱 아이디어를 체계적으로 기획하는 4단계 워크플로우. 핵심 가치 정의, MVP 범위 설정, 유저 플로우를 정의하여 PRD를 생성한다.
   이 스킬은 다음과 같은 요청에 반드시 사용한다: "앱 기획해줘", "앱 기획 시작", "앱 만들고 싶은데", "사이드 프로젝트 기획", "MVP 기획", "기획서 작성해줘", "PRD 만들어줘".
-  앱이나 서비스의 기획/PRD 작성을 원하는 맥락이라면 이 스킬을 사용한다. 시장 조사나 아이디어 검증은 `/market-research` 스킬을 사용한다.
+  앱이나 서비스의 기획/PRD 작성을 원하는 맥락이라면 이 스킬을 사용한다. 시장 조사나 아이디어 검증은 `slavingia/skills의 validate-idea` 스킬을 사용한다.
 user_invocable: true
 ---
 
@@ -11,7 +11,7 @@ user_invocable: true
 
 사용자가 제시한 앱 아이디어를 4단계에 걸쳐 체계적으로 기획하는 스킬입니다.
 
-> **시장 조사/아이디어 검증은 별도 스킬**: 시장성 검증이 필요하면 먼저 `/market-research`를 실행하세요. 이 스킬은 순수 기획(PRD 작성)에 집중합니다.
+> **시장 조사/아이디어 검증은 별도 스킬**: 시장성 검증이 필요하면 먼저 `slavingia/skills의 validate-idea`를 실행하세요. 이 스킬은 순수 기획(PRD 작성)에 집중합니다.
 
 > **도식화는 반드시 HTML/CSS로 생성한다. 아스키아트, 머메이드 금지.**
 
@@ -35,7 +35,7 @@ user_invocable: true
 
 **Actions:**
 
-1. **사용자 아이디어 + 시장 조사 결과를 입력으로 제공** (`/market-research` 결과가 있으면 함께 참조)
+1. **사용자 아이디어 + 시장 조사 결과를 입력으로 제공** (`slavingia/skills의 validate-idea` 결과가 있으면 함께 참조)
 
 2. **3개 에이전트 병렬 실행** (Task 도구로 동시 실행)
 
@@ -310,7 +310,7 @@ user_invocable: true
    [Step 3 결과]
 
    ## 시장 조사 (별도)
-   > `/market-research`로 작성된 시장조사 문서가 있으면 여기에 링크: `docs/ssot/prd/YYYY-MM-DD-[앱이름]-시장조사.md`
+   > `slavingia/skills의 validate-idea`로 작성된 시장조사 문서가 있으면 여기에 링크: `docs/ssot/prd/YYYY-MM-DD-[앱이름]-시장조사.md`
 
    ## 다음 단계
    - [ ] 프로젝트 세팅
