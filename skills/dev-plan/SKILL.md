@@ -23,7 +23,16 @@ user_invocable: true
 ## 전제조건
 
 - `docs/ssot/prd/` 디렉토리에 기획서(PRD) 파일이 존재해야 한다 (`docs/ssot/prd/YYYY-MM-DD-*-기획서.md`)
-- 기획서가 없으면 실행을 거부하고, `/app-plan` 스킬을 먼저 실행하도록 안내한다
+- **없으면**:
+  ```
+  ⚠️ 이 스킬을 실행하려면 먼저 `/app-plan`으로 기획서를 작성해야 합니다.
+  현재 docs/ssot/prd/ 에 기획서 파일이 없습니다.
+
+  선택하세요:
+  a) /app-plan 먼저 실행 (권장)
+  b) --skip으로 전제조건 건너뛰고 진행 (비권장)
+  ```
+- `--skip` 선택 시 → 산출물에 스킵 경고 표시
 
 ## 실행 단계
 
@@ -67,28 +76,40 @@ user_invocable: true
    - 상태 관리 전략
    - 외부 라이브러리/서비스 의존성
 
-### Step 3: 플랫폼 스킬 설치
+### Step 3: 플랫폼 베스트 프랙티스 스킬 설치 (필수 — 건너뛸 수 없음)
 
-tech stack이 결정된 후, 해당 플랫폼에 맞는 검증된 스킬을 검색하고 설치한다.
+> **이 단계는 스킵할 수 없다.** 베스트 프랙티스 스킬 없이 구현에 들어가면 품질이 보장되지 않는다. 적절한 스킬을 찾지 못했더라도, 최소한 해당 스택의 공식 문서 기반 커스텀 스킬을 생성해야 한다.
+
+tech stack이 결정된 후, 해당 플랫폼에 맞는 베스트 프랙티스 스킬을 **반드시** 검색하고 설치한다.
 
 **Actions:**
 
-1. **스킬 검색** (아래 순서대로 시도)
+1. **스킬 검색** (아래 순서대로 시도, 찾을 때까지)
    1. Claude Code 플러그인/마켓플레이스에서 해당 플랫폼 스킬 검색 (예: `claude plugin search swift`, `claude plugin search flutter`)
    2. GitHub에서 Claude Code 스킬 검색 (예: `gh search repos "claude code skill swift"`)
-   3. 위 두 곳에서 못 찾으면, 인터넷 검색으로 해당 플랫폼 best practice를 조사하여 `.claude/skills/`에 스킬 자동 생성
+   3. **위 두 곳에서 못 찾으면 — 커스텀 스킬 자동 생성 (필수)**:
+      - 해당 플랫폼의 공식 문서, 공식 가이드라인, 커뮤니티 베스트 프랙티스를 웹 검색
+      - 조사 결과를 기반으로 `.claude/skills/{플랫폼}-best-practices/SKILL.md` 자동 생성
+      - 최소 포함 내용: 프로젝트 구조 컨벤션, 코딩 스타일, 테스트 패턴, 성능 주의사항
 
-2. **스킬 설치**
+2. **스킬 설치 및 확인**
    - 검색된 스킬을 프로젝트의 `.claude/skills/`에 설치한다
-   - 설치 후 스킬이 정상 동작하는지 확인한다
+   - 설치 후 스킬 목록을 사용자에게 보여주고 확인받는다:
+     ```
+     다음 베스트 프랙티스 스킬을 설치했습니다:
+     - [스킬명] (출처: 마켓플레이스/GitHub/자동생성)
 
-3. **설치된 스킬 목록 기록**
-   - dev-plan 문서의 "기술 스택 상세" 섹션 아래에 설치된 스킬 목록을 기록한다
+     이 스킬들이 개발 과정에서 코드 품질과 패턴을 가이드합니다.
+     ```
+
+3. **설치된 스킬 목록을 dev-plan 문서에 기록** (필수)
 
 **플랫폼별 예시:**
 - Swift/iOS → swift-concurrency, swift-testing, swiftui-pro 등
+- Kotlin/Android → kotlin-coroutines, compose-patterns, android-testing 등
 - Flutter → flutter-state, flutter-testing 등
 - Next.js → nextjs-patterns, react-testing 등
+- Python → python-typing, fastapi-patterns 등
 
 ### Step 4: 문서 생성 및 저장
 
