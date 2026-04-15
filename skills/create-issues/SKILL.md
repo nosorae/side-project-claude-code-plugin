@@ -94,7 +94,15 @@ EOF
 
 각 에픽의 하위 작업을 이슈로 생성한다. 타입에 따라 템플릿이 다르다.
 
-**claude-task 이슈:**
+**claude-task 이슈 — 어떤 LLM이 와도 동일하게 구현할 수 있을 만큼 명확하게:**
+
+이슈 본문에 반드시 포함해야 하는 항목:
+1. **맥락**: 상위 에픽, 관련 문서 경로, 이 작업의 전후 의존성
+2. **구현 스펙**: 구체적으로 어떤 파일을 만들고, 어떤 코드를 쓰고, 어떤 설정을 해야 하는지. "설정해라"가 아니라 "이 값으로 설정해라"
+3. **입력/출력**: 이 작업의 입력은 뭐고 출력은 뭔지
+4. **검증 방법**: 어떤 명령어를 실행해서 어떤 결과가 나오면 완료인지
+5. **참고할 문서**: dev-plan, 베스트 프랙티스 스킬 등 참조할 문서 경로
+
 ```bash
 gh issue create \
   --title "프로젝트 초기화 및 기본 구조 셋업" \
@@ -102,39 +110,80 @@ gh issue create \
   --body "$(cat <<'EOF'
 ## 맥락
 - 상위 에픽: #(에픽번호) [M0] Epic: 개발 환경 구성
-- 관련 문서: docs/ssot/dev/dev-plan.md
-- 전체 흐름 내 위치: (없음) → **이 작업** → 환경변수 설정
+- 관련 문서: docs/ssot/dev/dev-plan.md (디렉토리 구조 섹션)
+- 의존성: (없음) → **이 작업** → #(다음이슈) 환경변수 설정
 
-## 할일
-- [ ] Next.js 프로젝트 생성
-- [ ] Tailwind CSS 설정
-- [ ] 디렉토리 구조 생성
-- [ ] ESLint/Prettier 설정
+## 구현 스펙
+- `npx create-next-app@14 . --typescript --tailwind --eslint --app --src-dir` 실행
+- `src/` 아래 다음 디렉토리 생성:
+  - `src/components/ui/` — 공유 UI 컴포넌트
+  - `src/lib/` — 유틸리티 함수
+  - `src/hooks/` — 커스텀 훅
+  - `src/types/` — 타입 정의
+- `.prettierrc`에 `{ "semi": false, "singleQuote": true, "tabWidth": 2 }` 설정
+- `next.config.ts`에 이미지 도메인 설정: `images: { domains: [] }`
 
 ## 검증 방법
-- [ ] `npm run dev`로 개발 서버 정상 실행
-- [ ] 기본 페이지 렌더링 확인
+- [ ] `npm run dev` → localhost:3000 접속 → 기본 페이지 렌더링
+- [ ] `npm run build` → 에러 없이 빌드 완료
+- [ ] `npm run lint` → 경고/에러 없음
+- [ ] `src/components/ui/`, `src/lib/`, `src/hooks/`, `src/types/` 디렉토리 존재
 EOF
 )"
 ```
 
-**human-task 이슈:**
+**human-task 이슈 — 개발 경험이 없는 사람도 따라할 수 있게 스텝바이스텝으로:**
+
+이슈 본문에 반드시 포함해야 하는 항목:
+1. **왜 이걸 해야 하는지**: 이 작업이 전체에서 어떤 역할인지 한 줄 설명
+2. **스텝바이스텝 가이드**: 스크린샷 위치까지 설명하는 수준. "생성해라"가 아니라 "어디를 클릭해서 뭘 입력해라"
+3. **선택지가 있으면 추천과 이유**: "리전을 고르라는데 뭘 골라야 하지?" → "Northeast Asia(ap-northeast-1) 추천, 한국에서 레이턴시 가장 낮음"
+4. **흔한 실수/주의사항**: 이 단계에서 자주 틀리는 것
+5. **완료 후 다음 단계**: 이 결과물을 어디에 넣어야 하는지
+
 ```bash
 gh issue create \
   --title "Supabase 프로젝트 생성 및 초기 설정" \
   --label "human-task" \
   --body "$(cat <<'EOF'
-## 목적
-백엔드 DB와 인증을 위한 Supabase 프로젝트가 필요합니다.
+## 왜 필요한가
+앱의 데이터베이스와 사용자 인증을 Supabase로 처리합니다.
+이 작업이 끝나야 #(다음이슈) 환경변수 설정을 진행할 수 있습니다.
 
-## 단계별 가이드
-- [ ] Step 1: Supabase 대시보드에서 새 프로젝트 생성 → [Supabase Dashboard](https://supabase.com/dashboard)
-- [ ] Step 2: 프로젝트 URL과 anon key 복사
-- [ ] Step 3: `.env.local` 파일에 환경변수 추가
+## 스텝바이스텝 가이드
+
+### Step 1: Supabase 프로젝트 생성
+1. [supabase.com/dashboard](https://supabase.com/dashboard) 접속 → 로그인 (GitHub 계정으로 가능)
+2. "New Project" 클릭
+3. 입력 항목:
+   - **Project name**: `{프로젝트이름}` (kebab-case)
+   - **Database Password**: 강력한 비밀번호 입력 → 따로 메모해둘 것 (나중에 다시 볼 수 없음)
+   - **Region**: Northeast Asia (ap-northeast-1) 선택 — 한국에서 레이턴시 가장 낮음
+   - **Plan**: Free tier (사이드 프로젝트라면 충분)
+4. "Create new project" 클릭 → 2~3분 대기
+
+### Step 2: 키 복사
+1. 프로젝트 대시보드 → 좌측 메뉴 Settings → API
+2. 다음 두 값을 복사:
+   - **Project URL**: `https://xxx.supabase.co` 형태
+   - **anon public key**: `eyJ...` 형태 (길이가 매우 긴 문자열)
+
+### Step 3: 환경변수 파일에 추가
+프로젝트 루트에 `.env.local` 파일을 만들고:
+```
+NEXT_PUBLIC_SUPABASE_URL=여기에_Project_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=여기에_anon_key
+```
+
+### 주의사항
+- Database Password를 잊으면 프로젝트를 새로 만들어야 함 — 반드시 메모
+- `.env.local`은 `.gitignore`에 이미 포함되어 있어서 커밋되지 않음 (정상)
+- anon key는 공개되어도 괜찮음 (Row Level Security로 보호됨). service_role key는 절대 공개하면 안 됨
 
 ## 완료 기준
-- [ ] Supabase 프로젝트가 생성되어 접근 가능
-- [ ] 환경변수가 `.env.local`에 설정됨
+- [ ] Supabase 대시보드에서 프로젝트 상태가 "Active"
+- [ ] `.env.local`에 URL과 anon key가 입력됨
+- [ ] 다음 이슈(#다음이슈)에서 이 값을 사용할 준비 완료
 EOF
 )"
 ```
@@ -186,8 +235,8 @@ Git 커밋 + 푸시 (로드맵에 이슈 번호 매핑 추가)
 - [ ] 로드맵의 모든 작업이 이슈로 생성되었는가?
 - [ ] 모든 이슈에 적절한 라벨이 부여되었는가?
 - [ ] 에픽 이슈에 하위 작업 링크가 정확한가?
-- [ ] claude-task 이슈가 독립 수행 가능한 수준으로 작성되었는가?
-- [ ] human-task 이슈에 외부 서비스 링크가 포함되었는가?
+- [ ] claude-task: 다른 LLM이 이 이슈만 보고 동일하게 구현할 수 있는가? (구체적 파일명, 설정값, 검증 명령어 포함)
+- [ ] human-task: 개발 경험 없는 사람이 스텝바이스텝으로 따라할 수 있는가? (클릭 위치, 추천 선택지, 주의사항 포함)
 - [ ] 의존성 순서가 이슈 본문에 반영되었는가?
 - [ ] 사용자와 이슈 구조를 합의했는가?
 
