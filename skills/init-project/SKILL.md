@@ -1,7 +1,7 @@
 ---
 name: init-project
 description: |
-  새 사이드 프로젝트를 부트스트랩하는 스킬. 플러그인 설치(규칙 8개 + 스킬 16개), Git/GitHub 초기화, develop 브랜치 생성, hooks 설정, 라벨 생성, product-blueprint 생성까지 한번에 수행한다.
+  새 사이드 프로젝트를 부트스트랩하는 스킬. 플러그인 설치(스킬 16개 + hooks 2개) + 규칙 8개 복사, Git/GitHub 초기화, develop 브랜치 생성, 라벨 생성, product-blueprint 생성까지 한번에 수행한다.
   이 스킬은 다음과 같은 요청에 반드시 사용한다: "새 프로젝트 시작", "프로젝트 초기화", "사이드 프로젝트 셋업", "/init-project", "프로젝트 만들어줘", "레포 생성해줘".
   새 프로젝트를 시작하거나 초기 환경을 세팅하는 맥락이면 이 스킬을 사용한다.
 user_invocable: true
@@ -76,50 +76,56 @@ git checkout main
 
 **Actions:**
 
-#### 3-1. 플러그인 설치 (규칙 + 스킬 자동 적용)
+#### 3-1. 마켓플레이스 등록 + 플러그인 설치
 
 ```bash
 cd {프로젝트경로}
-claude plugin add nosorae/side-project-claude-settings
+
+# 마켓플레이스 등록 (최초 1회)
+/plugin marketplace add nosorae/side-project-claude-settings
+
+# 플러그인 설치 (프로젝트 스코프 — .claude/settings.json에 기록, Git 커밋 가능)
+claude plugin install side-project-claude-settings@nosorae/side-project-claude-settings --scope project
 ```
+
+> **플러그인이 제공하는 것**: 스킬 16개 + hooks 2개 (log-conversation, remind-blueprint-update)
+> **플러그인이 제공하지 않는 것**: 규칙(rules) — 아래 3-2에서 별도 복사
 
 > **왜 플러그인인가?** 기존 방식(파일 복사)은 원본이 업데이트되면 각 프로젝트에 수동 반영이 필요했다. 플러그인 방식은 원본 업데이트 시 모든 프로젝트에 자동 반영된다.
 
-#### 3-2. 예외 사항 (플러그인으로 해결되지 않는 항목)
+> **스킬 호출 방식**: 플러그인 스킬은 네임스페이스로 호출된다.
+> 예: `/side-project-claude-settings:app-plan` 또는 자연어 트리거("앱 기획해줘")로도 자동 발동.
 
-플러그인은 규칙과 스킬만 제공한다. 아래 항목은 프로젝트별로 직접 설정해야 한다:
+#### 3-2. 규칙 복사 (플러그인 미지원 — 필수)
 
-**a) hooks 복사**
+플러그인은 규칙(rules)을 로드하지 않는다. 규칙은 프로젝트의 `.claude/rules/`에 직접 복사해야 한다:
+
 ```bash
-SOURCE=$(claude plugin path nosorae/side-project-claude-settings 2>/dev/null || echo ~/side-project-claude-settings)
-mkdir -p {프로젝트경로}/hooks
-cp "$SOURCE/hooks/"*.sh {프로젝트경로}/hooks/
-chmod +x {프로젝트경로}/hooks/*.sh
+SOURCE=~/.claude/plugins/cache/side-project-claude-settings
+# 캐시 경로가 없으면 GitHub에서 직접
+if [ ! -d "$SOURCE" ]; then
+  SOURCE=~/side-project-claude-settings
+fi
+
+mkdir -p {프로젝트경로}/.claude/rules
+cp "$SOURCE/rules/"*.md {프로젝트경로}/.claude/rules/
 ```
 
-**b) settings.json 생성/병합**
-```bash
-# settings.json이 이미 있으면 hooks 섹션만 병합, 없으면 새로 생성
-mkdir -p {프로젝트경로}/.claude
-cp "$SOURCE/.claude/settings.json" {프로젝트경로}/.claude/settings.json
-```
-
-> **주의**: 기존 settings.json이 있으면 사용자에게 확인 후 hooks 섹션만 추가한다. 기존 설정을 덮어쓰지 않는다.
+> **주의**: 기존 `.claude/rules/`가 있으면 사용자에게 덮어쓸지 확인. 충돌 파일만 표시한다.
 
 #### 3-3. 예외 상황 처리
 
 | 상황 | 대응 |
 |------|------|
-| 플러그인 이미 설치됨 | 건너뛴다 (이미 최신이면 안내만) |
-| 플러그인 설치 실패 (네트워크 오류) | 로컬 경로(`~/side-project-claude-settings`)에서 파일 직접 복사로 폴백 (아래 폴백 절차 참조) |
+| 플러그인 이미 설치됨 | 건너뛴다 (`/plugin` → Installed 탭에서 확인) |
+| 플러그인 설치 실패 (네트워크 오류) | 로컬 경로(`~/side-project-claude-settings`)에서 파일 직접 복사로 폴백 (아래 3-4 참조) |
 | 로컬 레포도 없음 | `git clone https://github.com/nosorae/side-project-claude-settings.git ~/side-project-claude-settings` 후 폴백 절차 실행 |
 | 프로젝트에 이미 `.claude/rules/` 존재 | 사용자에게 덮어쓸지 확인. 충돌 파일만 표시 |
 | 프로젝트에 이미 `.claude/skills/` 존재 | 플러그인 스킬이 우선. 기존 커스텀 스킬은 유지 |
-| hooks/ 디렉토리에 기존 hook 있음 | 기존 hook 유지 + 새 hook 추가. 파일명 충돌 시 사용자 확인 |
 
 #### 3-4. 폴백 절차 (플러그인 설치 실패 시)
 
-플러그인 설치가 실패하면 로컬 경로에서 직접 파일을 복사한다:
+플러그인 설치가 실패하면 로컬 경로에서 규칙 + 스킬 + hooks + settings를 모두 직접 복사한다:
 
 ```bash
 SOURCE=~/side-project-claude-settings
@@ -133,9 +139,18 @@ mkdir -p {프로젝트경로}/.claude/skills
 for skill in app-plan market-research design-system-to-figma prd-to-figma dev-plan dev-roadmap create-issues handoff resume product-blueprint interview ideation sync-roadmap clarify sync; do
   cp -r "$SOURCE/skills/$skill" {프로젝트경로}/.claude/skills/
 done
+
+# hooks 복사 (플러그인이 없으면 직접 복사 필요)
+mkdir -p {프로젝트경로}/hooks
+cp "$SOURCE/hooks/"*.sh {프로젝트경로}/hooks/
+chmod +x {프로젝트경로}/hooks/*.sh
+
+# settings.json 복사 (hooks 설정 포함)
+mkdir -p {프로젝트경로}/.claude
+cp "$SOURCE/.claude/settings.json" {프로젝트경로}/.claude/settings.json
 ```
 
-> **주의**: 폴백 복사 시에는 원본 업데이트가 자동 반영되지 않는다. 추후 네트워크가 복구되면 `claude plugin add nosorae/side-project-claude-settings`으로 전환을 권장한다.
+> **주의**: 폴백 복사 시에는 원본 업데이트가 자동 반영되지 않는다. 추후 네트워크가 복구되면 플러그인으로 전환을 권장한다.
 
 > **참고**: 플랫폼별 전문 스킬(예: swift-concurrency, flutter-state, nextjs-patterns 등)은 `/dev-plan` 실행 시 tech stack 결정 후 자동으로 검색/설치됩니다.
 
@@ -332,8 +347,8 @@ gh issue create --title "[Epic] 개발 이슈 생성" \
 GitHub: https://github.com/{사용자}/{프로젝트이름}
 
 포함된 항목:
-- 플러그인: side-project-claude-settings (규칙 8개 + 스킬 16개 자동 적용)
-- hooks (log-conversation: 대화 기록 자동 로깅, remind-blueprint-update: SSOT 변경 감지)
+- 플러그인: side-project-claude-settings (스킬 16개 + hooks 2개 자동 적용)
+- 규칙 8개 (.claude/rules/ 에 복사됨)
 - Git Flow (main + develop 브랜치)
 - docs/ 디렉토리 구조 (ssot/prd, ssot/design, ssot/dev, refs/, handoff/, lessons/, sessions/)
 - 초기 product-blueprint.html (5개 탭 placeholder)
