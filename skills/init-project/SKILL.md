@@ -85,24 +85,18 @@ git checkout main
 
 플러그인은 `rules/`를 사용자 프로젝트에 자동 배포할 수 없으므로 직접 복사한다.
 
-```bash
-# 플러그인 캐시 → 로컬 클론 → git clone 순으로 폴백
-SOURCE=""
-for candidate in \
-  ~/.claude/plugins/cache/side-project-claude-code-plugin \
-  ~/.claude/plugins/cache/nosorae/side-project-claude-code-plugin \
-  ~/side-project-claude-code-plugin \
-  ~/practice/side-project-claude-settings; do
-  if [ -d "$candidate/rules" ]; then
-    SOURCE="$candidate"
-    break
-  fi
-done
+플러그인 자기 자신의 경로는 공식 환경변수 `${CLAUDE_PLUGIN_ROOT}`로 참조한다 ([공식 docs](https://code.claude.com/docs/en/plugins-reference.md#environment-variables)). 이 변수는 SKILL.md 본문 안에서 자동 치환되고 Bash 실행 시 환경에도 export된다.
 
-if [ -z "$SOURCE" ]; then
+```bash
+# 1순위: 공식 환경변수
+SOURCE="${CLAUDE_PLUGIN_ROOT}"
+
+# 2순위 (폴백): 변수가 비어있거나 rules 디렉토리가 없으면 git clone
+if [ -z "$SOURCE" ] || [ ! -d "$SOURCE/rules" ]; then
+  echo "ℹ️  CLAUDE_PLUGIN_ROOT 미설정 또는 rules 누락 — git clone 폴백"
   TMP=$(mktemp -d)
   git clone --depth 1 https://github.com/nosorae/side-project-claude-code-plugin.git "$TMP" || {
-    echo "❌ rules 소스를 찾을 수 없습니다. 수동 클론 후 재시도하세요."
+    echo "❌ git clone 실패. 네트워크/권한 확인 후 재시도하세요."
     exit 1
   }
   SOURCE="$TMP"
@@ -118,7 +112,7 @@ fi
 cp "$SOURCE/rules/"*.md {프로젝트경로}/.claude/rules/
 ```
 
-> **왜 캐시에서 복사?** 공식 plugin spec은 path traversal을 금지해서 플러그인이 사용자 프로젝트에 임의 파일을 자동 배포할 수 없다. ([Plugins reference](https://code.claude.com/docs/en/plugins-reference.md))
+> **왜 직접 복사?** plugin spec은 path traversal을 금지해서 플러그인이 사용자 프로젝트에 임의 파일을 자동 배포할 수 없다 ([Plugins reference](https://code.claude.com/docs/en/plugins-reference.md)). 따라서 init-project가 명시적으로 `${CLAUDE_PLUGIN_ROOT}`에서 파일을 읽어 복사한다.
 
 ### Step 4: docs 구조 + product-blueprint.html
 
