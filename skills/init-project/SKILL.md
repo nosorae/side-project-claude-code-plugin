@@ -1,7 +1,7 @@
 ---
 name: init-project
 description: |
-  새 사이드 프로젝트를 부트스트랩하는 스킬. 플러그인이 자동 처리하지 않는 부분(rules 복사, docs 구조, GitHub 인프라, 라벨/마일스톤, 에픽 이슈 7개, branch protection)을 한번에 셋업한다.
+  새 사이드 프로젝트를 부트스트랩하는 스킬. 플러그인이 자동 처리하지 않는 부분(rules 복사, docs 구조, GitHub 인프라, 라벨/마일스톤, 에픽 이슈 7개, branch protection, 블루프린트 공개 미러 셋업)을 한번에 셋업한다.
   이 스킬은 다음과 같은 요청에 반드시 사용한다: "새 프로젝트 시작", "프로젝트 초기화", "사이드 프로젝트 셋업", "/init-project", "프로젝트 만들어줘", "레포 생성해줘", "init project".
   플러그인 설치 직후 새 프로젝트를 시작하거나 초기 환경을 세팅하는 맥락이면 이 스킬을 사용한다.
 user_invocable: true
@@ -255,6 +255,86 @@ gh issue create \
 
 나머지 6개 이슈도 동일한 형식으로 생성한다 (제목/할일/검증만 변경).
 
+### Step 9.5 (선택): 블루프린트 공개 URL 셋업
+
+`product-blueprint.html`을 외부와 공유 가능한 GitHub Pages URL로 노출하는 옵션. 별도 public sync repo + GitHub Action으로 자동 미러링한다. **메인 코드는 private 그대로 유지**되고 블루프린트만 공개됨.
+
+사용자에게 묻는다:
+```
+블루프린트를 공개 URL로 공유하시겠어요?
+
+선택지:
+  y - 별도 public repo({프로젝트}-blueprint) 생성 + 자동 sync 셋업
+  N - 스킵 (나중에 필요하면 다시 init-project 일부만 재실행 가능)
+```
+
+**Yes 응답 시 자동 실행:**
+
+```bash
+PROJECT={프로젝트이름}
+OWNER=$(gh api user --jq .login)
+MIRROR="${OWNER}/${PROJECT}-blueprint"
+
+# 1. public sync repo 생성
+gh repo create "${PROJECT}-blueprint" --public \
+  --description "${PROJECT} 블루프린트 공개 미러" \
+  --add-readme
+
+# 2. Deploy Key용 SSH keypair 생성 (임시)
+KEY_PATH=$(mktemp -d)/bp_key
+ssh-keygen -t ed25519 -f "$KEY_PATH" -N "" -C "blueprint-deploy@${PROJECT}" -q
+
+# 3. 공개키 → sync repo Deploy Key (write 권한)
+gh api -X POST "repos/${MIRROR}/keys" \
+  -f title="blueprint-sync" \
+  -f key="$(cat ${KEY_PATH}.pub)" \
+  -F read_only=false
+
+# 4. 비공개키 → private repo의 secret
+gh secret set BLUEPRINT_DEPLOY_KEY --repo "${OWNER}/${PROJECT}" < "$KEY_PATH"
+
+# 5. 로컬 키 즉시 삭제
+shred -u "$KEY_PATH" "${KEY_PATH}.pub" 2>/dev/null || rm -f "$KEY_PATH" "${KEY_PATH}.pub"
+
+# 6. workflow 파일 복사 + 치환 ($SOURCE는 Step 3에서 결정)
+mkdir -p {프로젝트경로}/.github/workflows
+sed "s|__MIRROR_REPO__|${MIRROR}|g" \
+  "$SOURCE/templates/.github/workflows/sync-blueprint.yml" \
+  > {프로젝트경로}/.github/workflows/sync-blueprint.yml
+
+# 7. sync repo에 dummy index.html commit (Pages 활성화에 필요)
+TMP_MIRROR=$(mktemp -d)
+gh repo clone "${MIRROR}" "$TMP_MIRROR"
+cd "$TMP_MIRROR"
+echo "<html><body>준비 중... blueprint sync workflow 첫 실행 후 갱신됩니다.</body></html>" > index.html
+git add index.html
+git -c user.name="init-project" -c user.email="init@noreply" \
+  commit -m "Init: blueprint mirror placeholder"
+git push
+cd - && rm -rf "$TMP_MIRROR"
+
+# 8. GitHub Pages 활성화
+gh api -X POST "repos/${MIRROR}/pages" \
+  -f 'source[branch]=main' \
+  -f 'source[path]=/' 2>/dev/null || \
+  echo "ℹ️  Pages 활성화 실패 (이미 활성화됐거나 권한 문제). 수동 확인: https://github.com/${MIRROR}/settings/pages"
+
+# 9. 결과 안내
+echo "✅ 블루프린트 공개 URL 셋업 완료"
+echo "   미러 repo: https://github.com/${MIRROR}"
+echo "   공개 URL:  https://${OWNER}.github.io/${PROJECT}-blueprint/"
+echo "   첫 sync는 product-blueprint.html을 main에 push하면 자동 실행 (~1-2분 후 반영)"
+```
+
+**스킵 시:**
+- workflow 파일 안 만듦, secret 안 등록
+- 나중에 켜고 싶으면: 사용자가 같은 단계를 수동 실행 (또는 별도 스킬 `/enable-blueprint-public` 가능)
+
+**보안 노트:**
+- Deploy Key는 sync repo에만 권한 → private repo의 다른 코드 누수 X
+- workflow는 `docs/ssot/product-blueprint.html` 파일만 push → 다른 파일 누수 X
+- private key는 GitHub secret으로만 보관, 로컬 임시 파일은 즉시 삭제
+
 ## 완료 후 사용자에게 알릴 것
 
 ```
@@ -270,6 +350,7 @@ gh issue create \
 - .git/hooks/pre-push (커밋 메시지 #N 강제)
 - 라벨 3개 + 마일스톤 v0.1.0
 - 에픽 이슈 7개
+- (옵션 선택 시) 블루프린트 공개 미러: https://{owner}.github.io/{프로젝트}-blueprint/
 
 다음 단계:
   /app-plan    # 첫 에픽(#1) 시작

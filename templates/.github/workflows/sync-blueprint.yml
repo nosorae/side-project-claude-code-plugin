@@ -1,0 +1,58 @@
+name: Sync Blueprint to Public Mirror
+
+# product-blueprint.html이 변경되면 별도 public repo로 자동 push.
+# Public repo는 GitHub Pages로 노출되어 외부 공유가 가능하다.
+# 인증은 Deploy Key (SSH) 방식 — PAT 불필요, 권한 누수 0.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/ssot/product-blueprint.html'
+  workflow_dispatch:  # 수동 트리거 허용
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      # init-project가 자동 치환: {OWNER}/{PROJECT}-blueprint
+      MIRROR_REPO: __MIRROR_REPO__
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Deploy Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.BLUEPRINT_DEPLOY_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Push to public mirror
+        env:
+          GIT_SSH_COMMAND: "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no"
+        run: |
+          git clone "git@github.com:${MIRROR_REPO}.git" /tmp/mirror
+          cp docs/ssot/product-blueprint.html /tmp/mirror/index.html
+
+          cd /tmp/mirror
+          git -c user.name="blueprint-sync-bot" \
+              -c user.email="blueprint-sync@noreply" \
+              add index.html
+
+          # 변경 없으면 조용히 종료
+          if git -c user.name="blueprint-sync-bot" \
+                 -c user.email="blueprint-sync@noreply" \
+                 diff --cached --quiet; then
+            echo "변경 없음 — 스킵"
+            exit 0
+          fi
+
+          git -c user.name="blueprint-sync-bot" \
+              -c user.email="blueprint-sync@noreply" \
+              commit -m "Sync: blueprint from source (${GITHUB_SHA:0:7})"
+          git push
+
+      - name: Cleanup
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
