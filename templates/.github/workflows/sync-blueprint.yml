@@ -11,6 +11,12 @@ on:
       - 'docs/ssot/product-blueprint.html'
   workflow_dispatch:  # 수동 트리거 허용
 
+# 동시 실행 방지 — 빠르게 연달아 push해도 순서대로 큐잉
+# cancel-in-progress: false → 진행 중인 sync를 중단하지 않고 완료 후 다음 실행
+concurrency:
+  group: blueprint-sync
+  cancel-in-progress: false
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -28,30 +34,60 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
 
-      - name: Push to public mirror
+      - name: Push to public mirror (with retry)
         env:
           GIT_SSH_COMMAND: "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no"
+          SOURCE_SHA: ${{ github.sha }}
         run: |
-          git clone "git@github.com:${MIRROR_REPO}.git" /tmp/mirror
-          cp docs/ssot/product-blueprint.html /tmp/mirror/index.html
+          set -e
 
-          cd /tmp/mirror
-          git -c user.name="blueprint-sync-bot" \
-              -c user.email="blueprint-sync@noreply" \
-              add index.html
+          # GitHub Actions 일시 장애 대비 — 최대 3회, 30초 간격
+          MAX_ATTEMPTS=3
+          ATTEMPT=1
 
-          # 변경 없으면 조용히 종료
-          if git -c user.name="blueprint-sync-bot" \
-                 -c user.email="blueprint-sync@noreply" \
-                 diff --cached --quiet; then
-            echo "변경 없음 — 스킵"
-            exit 0
-          fi
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            echo "=== Sync 시도 $ATTEMPT/$MAX_ATTEMPTS ==="
 
-          git -c user.name="blueprint-sync-bot" \
-              -c user.email="blueprint-sync@noreply" \
-              commit -m "Sync: blueprint from source (${GITHUB_SHA:0:7})"
-          git push
+            # 이전 시도의 잔재 정리
+            rm -rf /tmp/mirror
+
+            if git clone "git@github.com:${MIRROR_REPO}.git" /tmp/mirror \
+              && cp docs/ssot/product-blueprint.html /tmp/mirror/index.html \
+              && cd /tmp/mirror \
+              && git -c user.name="blueprint-sync-bot" \
+                     -c user.email="blueprint-sync@noreply" \
+                     add index.html; then
+
+              # 변경 없으면 조용히 성공
+              if git -c user.name="blueprint-sync-bot" \
+                     -c user.email="blueprint-sync@noreply" \
+                     diff --cached --quiet; then
+                echo "✅ 변경 없음 — 스킵"
+                exit 0
+              fi
+
+              if git -c user.name="blueprint-sync-bot" \
+                     -c user.email="blueprint-sync@noreply" \
+                     commit -m "Sync: blueprint from source (${SOURCE_SHA:0:7})" \
+                && git push; then
+                echo "✅ Sync 성공 (시도 $ATTEMPT)"
+                exit 0
+              fi
+            fi
+
+            cd - >/dev/null 2>&1 || true
+            echo "⚠️  Sync 실패 (시도 $ATTEMPT/$MAX_ATTEMPTS)"
+
+            if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+              echo "30초 후 재시도..."
+              sleep 30
+            fi
+
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+
+          echo "❌ 최대 재시도 횟수 도달. 수동 re-run 필요"
+          exit 1
 
       - name: Cleanup
         if: always()
