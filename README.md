@@ -20,14 +20,65 @@ claude plugin install side-project-claude-code-plugin@side-project-claude-settin
 
 ---
 
+## 첫 셋업: `/init-project`
+
+플러그인 설치 직후 한 번 실행하세요. **이거 안 하면 `/app-plan`이 제대로 동작하지 않습니다.**
+
+```
+나: /init-project
+```
+
+플러그인은 `skills/`와 `hooks/`만 로드합니다. 그 외에 파이프라인이 돌아가는 데 필요한 환경 — 워크플로우 규칙(`.claude/rules/`), `docs/` 디렉토리 구조, `product-blueprint.html`, GitHub 라벨/마일스톤/인프라(`pr-check.yml`, `pre-push` hook), 에픽 이슈 7개 — 은 `/init-project`가 한번에 셋업합니다.
+
+> **왜 따로 실행해야 하나?** Claude Code 플러그인 시스템은 path traversal 제약 때문에 사용자 프로젝트에 임의 파일을 자동 배포할 수 없습니다 ([공식 docs](https://code.claude.com/docs/en/plugins-reference.md)). 그래서 plugin install 직후 한 번 `/init-project`로 환경을 깔아주는 단계가 필요합니다.
+
+**`/init-project`가 묻는 것 (4가지):**
+1. 프로젝트 이름 (kebab-case)
+2. 프로젝트 경로 (기본 `~/side-project-{이름}`)
+3. GitHub 공개 여부 (기본 private)
+4. 한 줄 설명
+
+**`/init-project`가 자동으로 하는 것:**
+- `git init` + `gh repo create` + `develop` 브랜치
+- `.claude/rules/` 복사 (플러그인 캐시 → 프로젝트)
+- `docs/ssot/`, `docs/refs/`, `docs/handoff/`, `docs/lessons/`, `docs/sessions/` 생성
+- `product-blueprint.html` 5탭 스켈레톤 생성
+- GitHub 인프라 복사 (`.github/workflows/pr-check.yml`, 이슈 템플릿, `.git/hooks/pre-push`)
+- 라벨 3개 (`epic`, `claude-task`, `human-task`) + 마일스톤 `v0.1.0`
+- 에픽 이슈 7개 자동 생성
+- Branch protection (가능한 경우)
+
+---
+
+## 무료 GitHub 계정 제약
+
+GitHub Free 플랜 + private 레포 조합은 **branch protection을 설정할 수 없습니다** (GitHub Pro 이상 필요). `/init-project`는 이 조합을 감지하면 branch protection 단계를 자동 스킵하고 안내 메시지를 출력합니다.
+
+| 조합 | branch protection | 대응 |
+|------|------------------|------|
+| Free + public | ✅ 가능 | 자동 설정 |
+| Free + private | ❌ 불가 | 스킵 + 안내 (public 변경 또는 Pro 업그레이드) |
+| Pro 이상 | ✅ 가능 | 자동 설정 |
+
+**branch protection 없이도 작동하는 강제 메커니즘:**
+- `pr-check.yml` (PR 체크 액션) — 무료 + private에서도 동작
+- `.git/hooks/pre-push` — 로컬에서 커밋 메시지 `#N` 강제, 모든 환경에서 동작
+
+즉, branch protection이 빠져도 PR 흐름은 깨지지 않습니다. 다만 main 직접 push가 GitHub 측에서 막히지는 않으므로, `git-flow.md` 규칙을 사람이 의식적으로 지키거나 Pro 업그레이드를 권장합니다.
+
+---
+
 ## 설치하면 일어나는 일
 
-플러그인을 설치하는 순간, 프로젝트에 다음이 준비됩니다:
+플러그인 설치 + `/init-project` 후 프로젝트에 다음이 준비됩니다:
 
 - 기획부터 이슈 생성까지 이어지는 **파이프라인 스킬 8개**
 - 아이디어 검증, PM, 구현, 작업 관리를 위한 **동반 플러그인 4개** (자동 설치)
 - 대화를 자동 기록하는 **hook**
 - 문서가 바뀌면 알려주는 **변경 감지 hook**
+- 워크플로우 규칙 (`.claude/rules/`)
+- GitHub 인프라 (PR 체크, 이슈 템플릿, pre-push hook)
+- 에픽 이슈 7개 + 라벨 + 마일스톤 `v0.1.0`
 
 ---
 
