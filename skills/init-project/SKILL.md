@@ -52,7 +52,7 @@ gh --version
 사용자에게 다음 4가지를 물어본다 (AskUserQuestion 활용 가능):
 
 1. **프로젝트 이름** (kebab-case, 예: `my-workout-app`)
-2. **프로젝트 경로** (기본값: `~/side-project-{프로젝트이름}`)
+2. **프로젝트 경로** (기본값: `~/{프로젝트이름}`)
 3. **GitHub 레포 공개 여부** (`--public` / `--private`, 기본값: `--private`)
 4. **프로젝트 설명** (한 줄)
 

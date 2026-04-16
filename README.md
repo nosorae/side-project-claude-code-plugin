@@ -34,7 +34,7 @@ claude plugin install side-project-claude-code-plugin@side-project-claude-settin
 
 **`/init-project`가 묻는 것 (4가지):**
 1. 프로젝트 이름 (kebab-case)
-2. 프로젝트 경로 (기본 `~/side-project-{이름}`)
+2. 프로젝트 경로 (기본 `~/{이름}`)
 3. GitHub 공개 여부 (기본 private)
 4. 한 줄 설명
 
